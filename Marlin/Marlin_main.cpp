@@ -5007,7 +5007,7 @@ inline void gcode_G28() {
      *     O  = use oposite tower points instead of tower points with 4 point calibration
      *     T  = do not calibrate tower angles with 7+ point calibration
      *     Vn = verbose level (n=0-2 default 1)
-     *          n=0 dry-run mode: no calibration
+     *          n=0 dry-run mode: setting + probe results / no calibration
      *          n=1 settings 
      *          n=2 setting + probe results 
      */
@@ -5034,7 +5034,7 @@ inline void gcode_G28() {
 
       const static char save_message[] PROGMEM = "Save with M500 and/or copy to Configuration.h";
       float test_precision,
-            zero_std_dev = verbose_level ? 999.0 : 0.0,                                          // 0.0 in dry-run mode : forced end
+            zero_std_dev = verbose_level ? 999.0 : 0.0,  // 0.0 in dry-run mode : forced end
             e_old[XYZ] = {
               endstop_adj[A_AXIS],
               endstop_adj[B_AXIS],
@@ -5048,6 +5048,7 @@ inline void gcode_G28() {
              probe_points = abs(probe_mode);
       bool _1_point = (probe_points <= 1),
            _7_point = (probe_mode > 2),
+           _7_probe = (probe_points > 2),
            o_mode = (probe_mode == -2),
            towers = (probe_points > 2 || probe_mode == 2),
            opposites = (probe_points > 2 || o_mode);
@@ -5092,16 +5093,13 @@ inline void gcode_G28() {
       do {
 
         float z_at_pt[13] = { 0 },
-              S1 = z_at_pt[0],
-              S2 = sq(S1);
-        int16_t N = 1;
-        bool _4_probe = (probe_points == 2),
-             _7_probe = (probe_points > 2),
-             center_probe = (probe_points != 3 &&  probe_points != 6),
-             multi_circle = (probe_points > 4),
-             diff_circle = (probe_points > 5),
-             max_circle = (probe_points > 6),
-             intermediates = (probe_points == 4 || diff_circle);
+              S1 = 0.0,
+              S2 = 0.0,
+              start_circles = -1.0,
+              end_circles = 1.0;
+        int16_t N = 0,
+                center_points = 0;
+        bool zig_zag = true;
 
         setup_for_endstop_or_probe_move();
         test_precision = zero_std_dev;
@@ -5109,60 +5107,198 @@ inline void gcode_G28() {
 
         // probe the points
 
-        int16_t center_points = 0;
-
-        if (center_probe) {  // probe centre
-          z_at_pt[0] += probe_pt(0.0, 0.0 , true, 1);
-          center_points = 1;
-        }
-
-        int16_t step_axis = (multi_circle) ? 2 : 4,
-                start = (multi_circle) ? 11 : 9;                                              
-        if (_7_probe) {  // probe extra 3 or 6 centre points
-          for (int8_t axis = start; axis > 0; axis -= step_axis) {              
-            z_at_pt[0] += probe_pt(
-              cos(RADIANS(180 + 30 * axis)) * (0.1 * delta_calibration_radius),
-              sin(RADIANS(180 + 30 * axis)) * (0.1 * delta_calibration_radius), true, 1);
-          }
-          center_points += (multi_circle) ? 6 : 3;  // average centre points
-          z_at_pt[0] /= center_points;
-        }
-
-        start = (o_mode) ? 3 : 1;
-        step_axis = (_4_probe) ? 4 : (intermediates) ? 1 : 2;
-
-        if (!_1_point) {
-          float start_circles = (max_circle) ? -1.5 : (multi_circle) ? -1 : 0,  // one or multi radius points
-                end_circles = -start_circles;
-          bool zig_zag = true;
-          for (uint8_t axis = start; axis < 13; axis += step_axis) {                             // probes 3, 6 or 12 points on the calibration radius
-            for (float circles = start_circles ; circles <= end_circles; circles++)              // one or multi radius points
+        switch (probe_mode) {
+          case  1:
+          case -1:
+            setup_for_endstop_or_probe_move();
+            z_at_pt[0] += probe_pt(0.0, 0.0 , true, 1);
+            clean_up_after_endstop_or_probe_move();
+            break;
+          case  2:
+           setup_for_endstop_or_probe_move();
+           z_at_pt[0] += probe_pt(0.0, 0.0 , true, 1);
+           clean_up_after_endstop_or_probe_move();
+            for (uint8_t axis = 1; axis < 13; axis += 4) {
+              setup_for_endstop_or_probe_move();
               z_at_pt[axis] += probe_pt(
-                cos(RADIANS(180 + 30 * axis)) * (1 + circles * 0.1 * ((zig_zag) ? 1 : -1)) * delta_calibration_radius, 
-                sin(RADIANS(180 + 30 * axis)) * (1 + circles * 0.1 * ((zig_zag) ? 1 : -1)) * delta_calibration_radius, true, 1);
-
-            if (diff_circle) {
-              start_circles += (zig_zag) ? 0.5 : -0.5;  // opposites: one radius point less
-              end_circles = -start_circles;
+                cos(RADIANS(180 + 30 * axis)) * delta_calibration_radius, 
+                sin(RADIANS(180 + 30 * axis)) * delta_calibration_radius, true, 1);
+              clean_up_after_endstop_or_probe_move();
+              S1 += z_at_pt[axis];
+              S2 += sq(z_at_pt[axis]);
+              N++;
             }
-            zig_zag = !zig_zag;
-            if (multi_circle) z_at_pt[axis] /= (zig_zag) ? 3.0 : 2.0;  // average between radius points
-          }
+            break;
+          case -2:
+            setup_for_endstop_or_probe_move();
+            z_at_pt[0] += probe_pt(0.0, 0.0 , true, 1);
+            clean_up_after_endstop_or_probe_move();
+            for (uint8_t axis = 3; axis < 13; axis += 4) {
+              setup_for_endstop_or_probe_move();
+              z_at_pt[axis] += probe_pt(
+                cos(RADIANS(180 + 30 * axis)) * delta_calibration_radius, 
+                sin(RADIANS(180 + 30 * axis)) * delta_calibration_radius, true, 1);
+              clean_up_after_endstop_or_probe_move();
+              S1 += z_at_pt[axis];
+              S2 += sq(z_at_pt[axis]);
+              N++;
+            }
+            break;
+          case  3:
+          case -3:
+            for (int8_t axis = 9; axis > 0; axis -= 4) {              
+              setup_for_endstop_or_probe_move();
+              z_at_pt[0] += probe_pt(
+                cos(RADIANS(180 + 30 * axis)) * (0.1 * delta_calibration_radius),
+                sin(RADIANS(180 + 30 * axis)) * (0.1 * delta_calibration_radius), true, 1);
+              clean_up_after_endstop_or_probe_move();
+            }
+            center_points += 3;
+            setup_for_endstop_or_probe_move();
+            z_at_pt[0] /= center_points;
+            for (uint8_t axis = 1; axis < 13; axis += 2) {
+              setup_for_endstop_or_probe_move();
+              z_at_pt[axis] += probe_pt(
+                cos(RADIANS(180 + 30 * axis)) * delta_calibration_radius, 
+                sin(RADIANS(180 + 30 * axis)) * delta_calibration_radius, true, 1);
+              clean_up_after_endstop_or_probe_move();
+              S1 += z_at_pt[axis];
+              S2 += sq(z_at_pt[axis]);
+              N++;
+            }
+            break;
+          case  4:
+          case -4:
+            setup_for_endstop_or_probe_move();
+            z_at_pt[0] += probe_pt(0.0, 0.0 , true, 1);
+            clean_up_after_endstop_or_probe_move();
+            for (int8_t axis = 9; axis > 0; axis -= 4) {              
+              setup_for_endstop_or_probe_move();
+              z_at_pt[0] += probe_pt(
+                cos(RADIANS(180 + 30 * axis)) * (0.1 * delta_calibration_radius),
+                sin(RADIANS(180 + 30 * axis)) * (0.1 * delta_calibration_radius), true, 1);
+              clean_up_after_endstop_or_probe_move();
+            }
+            center_points += 4;
+            setup_for_endstop_or_probe_move();
+            z_at_pt[0] /= center_points;
+            for (uint8_t axis = 1; axis < 13; axis += 1) {
+              setup_for_endstop_or_probe_move();
+              z_at_pt[axis] += probe_pt(
+                cos(RADIANS(180 + 30 * axis)) * delta_calibration_radius, 
+                sin(RADIANS(180 + 30 * axis)) * delta_calibration_radius, true, 1);
+              clean_up_after_endstop_or_probe_move();
+            }
+            for (uint8_t axis = 1; axis < 13; axis += 2) {
+              z_at_pt[axis] = (z_at_pt[axis] + (z_at_pt[axis + 1] + z_at_pt[(axis + 10) % 12 + 1]) / 2.0) / 2.0;
+              S1 += z_at_pt[axis];
+              S2 += sq(z_at_pt[axis]);
+              N++;
+            }
+            break;
+          case  5:
+          case -5:
+            setup_for_endstop_or_probe_move();
+            z_at_pt[0] += probe_pt(0.0, 0.0 , true, 1);
+            clean_up_after_endstop_or_probe_move();
+            for (int8_t axis = 11; axis > 0; axis -= 2) {              
+              setup_for_endstop_or_probe_move();
+              z_at_pt[0] += probe_pt(
+                cos(RADIANS(180 + 30 * axis)) * (0.1 * delta_calibration_radius),
+                sin(RADIANS(180 + 30 * axis)) * (0.1 * delta_calibration_radius), true, 1);
+              clean_up_after_endstop_or_probe_move();
+           }
+            center_points += 7;
+            z_at_pt[0] /= center_points;
+            for (uint8_t axis = 1; axis < 13; axis += 2) {
+              for (float circles = start_circles ; circles <= end_circles; circles++) {
+                setup_for_endstop_or_probe_move();
+                z_at_pt[axis] += probe_pt(
+                  cos(RADIANS(180 + 30 * axis)) * (1 + circles * 0.1 * ((zig_zag) ? 1 : -1)) * delta_calibration_radius, 
+                  sin(RADIANS(180 + 30 * axis)) * (1 + circles * 0.1 * ((zig_zag) ? 1 : -1)) * delta_calibration_radius, true, 1);
+                clean_up_after_endstop_or_probe_move();
+                zig_zag = !zig_zag;
+                z_at_pt[axis] /= 3.0;
+                S1 += z_at_pt[axis];
+                S2 += sq(z_at_pt[axis]);
+                N++;
+              }
+            }
+            break;
+          case  6:
+          case -6:
+            for (int8_t axis = 11; axis > 0; axis -= 2) {              
+              setup_for_endstop_or_probe_move();
+              z_at_pt[0] += probe_pt(
+                cos(RADIANS(180 + 30 * axis)) * (0.1 * delta_calibration_radius),
+                sin(RADIANS(180 + 30 * axis)) * (0.1 * delta_calibration_radius), true, 1);
+              clean_up_after_endstop_or_probe_move();
+            }
+            center_points += 6;
+            z_at_pt[0] /= center_points;
+            for (uint8_t axis = 1; axis < 13; axis += 1) {
+              for (float circles = start_circles ; circles <= end_circles; circles++) {
+                setup_for_endstop_or_probe_move();
+                z_at_pt[axis] += probe_pt(
+                  cos(RADIANS(180 + 30 * axis)) * (1 + circles * 0.1 * ((zig_zag) ? 1 : -1)) * delta_calibration_radius, 
+                  sin(RADIANS(180 + 30 * axis)) * (1 + circles * 0.1 * ((zig_zag) ? 1 : -1)) * delta_calibration_radius, true, 1);
+                clean_up_after_endstop_or_probe_move();
+                start_circles += (zig_zag) ? 0.5 : -0.5;
+                end_circles = -start_circles;
+                zig_zag = !zig_zag;
+                z_at_pt[axis] /= (zig_zag) ? 3.0 : 2.0;
+              }
+            }
+            for (uint8_t axis = 1; axis < 13; axis += 2) {
+              z_at_pt[axis] = (z_at_pt[axis] + (z_at_pt[axis + 1] + z_at_pt[(axis + 10) % 12 + 1]) / 2.0) / 2.0;
+              S1 += z_at_pt[axis];
+              S2 += sq(z_at_pt[axis]);
+              N++;
+            }
+            break;
+          case  7:
+          case -7:
+            setup_for_endstop_or_probe_move();
+            z_at_pt[0] += probe_pt(0.0, 0.0 , true, 1);
+            clean_up_after_endstop_or_probe_move();
+            for (int8_t axis = 11; axis > 0; axis -= 2) {              
+              setup_for_endstop_or_probe_move();
+              z_at_pt[0] += probe_pt(
+                cos(RADIANS(180 + 30 * axis)) * (0.1 * delta_calibration_radius),
+                sin(RADIANS(180 + 30 * axis)) * (0.1 * delta_calibration_radius), true, 1);
+              clean_up_after_endstop_or_probe_move();
+            }
+            center_points += 7;
+            z_at_pt[0] /= center_points;
+            start_circles = -1.5;
+            end_circles = 1.5;
+            for (uint8_t axis = 1; axis < 13; axis += 1) {
+              for (float circles = start_circles ; circles <= end_circles; circles++) {
+                setup_for_endstop_or_probe_move();
+                z_at_pt[axis] += probe_pt(
+                  cos(RADIANS(180 + 30 * axis)) * (1 + circles * 0.1 * ((zig_zag) ? 1 : -1)) * delta_calibration_radius, 
+                  sin(RADIANS(180 + 30 * axis)) * (1 + circles * 0.1 * ((zig_zag) ? 1 : -1)) * delta_calibration_radius, true, 1);
+                clean_up_after_endstop_or_probe_move();
+                start_circles += (zig_zag) ? 0.5 : -0.5;
+                end_circles = -start_circles;
+                zig_zag = !zig_zag;
+                z_at_pt[axis] /= (zig_zag) ? 4.0 : 3.0;
+              }
+            }
+            for (uint8_t axis = 1; axis < 13; axis += 2) {
+              z_at_pt[axis] = (z_at_pt[axis] + (z_at_pt[axis + 1] + z_at_pt[(axis + 10) % 12 + 1]) / 2.0) / 2.0;
+              S1 += z_at_pt[axis];
+              S2 += sq(z_at_pt[axis]);
+              N++;
+            }
+            break;
         }
-        if (intermediates) step_axis = 2;
-
-        for (uint8_t axis = start; axis < 13; axis += step_axis) {                               // average half intermediates to towers and opposites
-          if (intermediates)
-            z_at_pt[axis] = (z_at_pt[axis] + (z_at_pt[axis + 1] + z_at_pt[(axis + 10) % 12 + 1]) / 2.0) / 2.0;
-
-          S1 += z_at_pt[axis];
-          S2 += sq(z_at_pt[axis]);
-          N++;
-        }
+        S1 += z_at_pt[0];
+        S2 += sq(z_at_pt[0]);
+        N++;
+        zero_std_dev = round(sqrt(S2 / N) * 1000.0) / 1000.0 + 0.00001;  // deviation from zero plane (least squares)
 
         // Solve matrices
-
-        zero_std_dev = round(sqrt(S2 / N) * 1000.0) / 1000.0 + 0.00001;                          // deviation from zero plane
 
         if (zero_std_dev < test_precision) {
           COPY(e_old, endstop_adj);
@@ -5175,9 +5311,9 @@ inline void gcode_G28() {
                 t_alpha = 0.0, t_beta = 0.0;
 
           const float r_diff = delta_radius - delta_calibration_radius,
-                      h_factor = 1.00 + r_diff * 0.001,                                          //1.02 for r_diff = 20mm
-                      r_factor = -(1.75 + 0.005 * r_diff + 0.001 * sq(r_diff)),                  //2.25 for r_diff = 20mm
-                      a_factor = 100.0 / delta_calibration_radius;                               //1.25 for cal_rd = 80mm
+                      h_factor = 1.00 + r_diff * 0.001,                         //1.02 for r_diff = 20mm
+                      r_factor = -(1.75 + 0.005 * r_diff + 0.001 * sq(r_diff)), //2.25 for r_diff = 20mm
+                      a_factor = 100.0 / delta_calibration_radius;              //1.25 for cal_rd = 80mm
 
           #define ZP(N,I) ((N) * z_at_pt[I])
           #define Z1000(I) ZP(1.00, I)
@@ -5218,7 +5354,7 @@ inline void gcode_G28() {
               e_delta[Z_AXIS] = Z1050(0) - Z0175(1) - Z0175(5) + Z0350(9) + Z0175(7) + Z0175(11) - Z0350(3);
               r_delta         = Z2250(0) - Z0375(1) - Z0375(5) - Z0375(9) - Z0375(7) - Z0375(11) - Z0375(3);
               
-              if (probe_mode > 0) {  //probe points negative disables tower angles
+              if (probe_mode > 0) {  //probe mode negative: disables tower angles
                 t_alpha = + Z0444(1) - Z0888(5) + Z0444(9) + Z0444(7) - Z0888(11) + Z0444(3);
                 t_beta  = - Z0888(1) + Z0444(5) + Z0444(9) - Z0888(7) + Z0444(11) + Z0444(3);
               }
@@ -5238,7 +5374,7 @@ inline void gcode_G28() {
 
           recalc_delta_settings(delta_radius, delta_diagonal_rod);
         }
-        else { // !iterate
+        else {
           // step one back
           COPY(endstop_adj, e_old);
           delta_radius = dr_old;
@@ -5250,7 +5386,7 @@ inline void gcode_G28() {
 
         // print report
 
-        if (verbose_level == 2) {
+        if (verbose_level != 1) {
           SERIAL_PROTOCOLPGM(".      c:");
           if (z_at_pt[0] > 0) SERIAL_CHAR('+');
           SERIAL_PROTOCOL_F(z_at_pt[0], 2);
@@ -5283,15 +5419,15 @@ inline void gcode_G28() {
             SERIAL_EOL;
           }
         }
-        if (test_precision != 0.0) {                                                             // !forced end
-          if (zero_std_dev >= test_precision) {                                                  // end iterations
+        if (test_precision != 0.0) {               // !forced end
+          if (zero_std_dev >= test_precision) {    // end iterations
             SERIAL_PROTOCOLPGM("Calibration OK");
             SERIAL_PROTOCOL_SP(36);
             SERIAL_PROTOCOLPGM("rolling back.");
             SERIAL_EOL;
             LCD_MESSAGEPGM("Calibration OK");
           }
-          else {                                                                                 // !end iterations
+          else {                                   // !end iterations
             char mess[15] = "No convergence";
             if (iterations < 31)
               sprintf_P(mess, PSTR("Iteration : %02i"), (int)iterations);
@@ -5329,7 +5465,7 @@ inline void gcode_G28() {
           if (zero_std_dev >= test_precision)
             serialprintPGM(save_message);
         }
-        else {                                                                                   // forced end
+        else {                                     // forced end
           if (verbose_level == 0) {
             SERIAL_PROTOCOLPGM("End DRY-RUN");
             SERIAL_PROTOCOL_SP(39);
