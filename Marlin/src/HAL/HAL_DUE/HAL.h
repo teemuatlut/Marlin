@@ -47,6 +47,8 @@
 #define NUM_SERIAL 1
 #define MYSERIAL0 customizedSerial
 
+#define E2END 0xFFF
+
 // We need the previous define before the include, or compilation bombs...
 #include "MarlinSerial_Due.h"
 #include "MarlinSerialUSB_Due.h"

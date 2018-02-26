@@ -127,6 +127,14 @@
   #define E1_CS_PIN        19   // PA10 E2_nCS
 #endif
 
+#define Z2_STEP_PIN        22   // PB26 E2_STEP *
+#define Z2_DIR_PIN         97   // PB24 E2_DIR -AddOns *
+#define Z2_ENABLE_PIN      18   // PA11 E2-EN
+#ifndef Z2_CS_PIN
+  #define Z2_CS_PIN          19   // PA10 E2_nCS
+#endif
+#define Z2_DIAG_PIN        25   // PD0 E2_DIAG
+
 //
 // Software SPI pins for TMC2130 stepper drivers.
 // Required for the Archim2 board.
@@ -151,7 +159,7 @@
 #define FAN_PIN             4   // D4 PC26 FET_PWM1
 #define FAN1_PIN            5   // D5 PC25 FET_PWM2
 
-#define HEATER_0_PIN        6   // D6 PC24 FET_PWM3
+#define HEATER_0_PIN       30   // D6 PC24 FET_PWM3
 #define HEATER_1_PIN        7   // D7 PC23 FET_PWM4
 #define HEATER_2_PIN        8   // D8 PC22 FET_PWM5
 #define HEATER_BED_PIN      9   // D9 PC21 BED_PWM
