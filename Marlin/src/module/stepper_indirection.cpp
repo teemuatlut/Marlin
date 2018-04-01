@@ -131,8 +131,6 @@
 #if ENABLED(HAVE_TMC2130)
 
   #include <SPI.h>
-  //#include <TMC2130Stepper.h>
-  #include <TMCStepper.h>
   #include "planner.h"
   #include "../core/enum.h"
 
@@ -287,8 +285,6 @@
 
   #include <SoftwareSerial.h>
   #include <HardwareSerial.h>
-  //#include <TMC2208Stepper.h>
-  #include <TMCStepper.h>
   #include "planner.h"
 
   #if TMC2208STEPPER_VERSION < 0x000101
@@ -495,7 +491,6 @@
 #if ENABLED(HAVE_TMC2660)
 
   #include <SPI.h>
-  #include <TMCStepper.h>
   #include "planner.h"
   #include "../core/enum.h"
 

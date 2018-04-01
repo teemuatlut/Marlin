@@ -24,15 +24,6 @@
 #define _TMC_UTIL_H_
 
 #include "../inc/MarlinConfigPre.h"
-/*
-#if ENABLED(HAVE_TMC2130)
-  #include <TMC2130Stepper.h>
-#endif
-
-#if ENABLED(HAVE_TMC2208)
-  #include <TMC2208Stepper.h>
-#endif
-*/
 #if HAVE_TRINAMIC //ENABLED(HAVE_TMC2660)
   #include <TMCStepper.h>
 #endif
