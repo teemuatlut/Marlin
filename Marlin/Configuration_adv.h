@@ -1013,9 +1013,9 @@
  * in your `pins_MYBOARD.h` file. (e.g., RAMPS 1.4 uses AUX3 pins `X_CS_PIN 53`, `Y_CS_PIN 49`, etc.).
  * You may also use software SPI if you wish to use general purpose IO pins.
  */
-//#define HAVE_TMC2130
+#define HAVE_TMC2130
 #if ENABLED(HAVE_TMC2130)  // Choose your axes here. This is mandatory!
-  //#define X_IS_TMC2130
+  #define X_IS_TMC2130
   //#define X2_IS_TMC2130
   //#define Y_IS_TMC2130
   //#define Y2_IS_TMC2130
@@ -1053,9 +1053,24 @@
   //#define E4_IS_TMC2208
 #endif
 
-#if ENABLED(HAVE_TMC2130) || ENABLED(HAVE_TMC2208)
+#define HAVE_TMC2660
+#if ENABLED(HAVE_TMC2660)  // Choose your axes here. This is mandatory!
+  //#define X_IS_TMC2660
+  //#define X2_IS_TMC2660
+  #define Y_IS_TMC2660
+  //#define Y2_IS_TMC2660
+  //#define Z_IS_TMC2660
+  //#define Z2_IS_TMC2660
+  //#define E0_IS_TMC2660
+  //#define E1_IS_TMC2660
+  //#define E2_IS_TMC2660
+  //#define E3_IS_TMC2660
+  //#define E4_IS_TMC2660
+#endif
 
-  #define R_SENSE           0.11  // R_sense resistor for SilentStepStick2130
+#if ENABLED(HAVE_TMC2130) || ENABLED(HAVE_TMC2208) || ENABLED(HAVE_TMC2660)
+
+  #define R_SENSE           0.20  // R_sense resistor for SilentStepStick2130
   #define HOLD_MULTIPLIER    0.5  // Scales down the holding current from run current
   #define INTERPOLATE       true  // Interpolate X/Y/Z_MICROSTEPS to 256
 
@@ -1106,7 +1121,7 @@
    * Use Trinamic's ultra quiet stepping mode.
    * When disabled, Marlin will use spreadCycle stepping mode.
    */
-  #define STEALTHCHOP
+  //#define STEALTHCHOP
 
   /**
    * Monitor Trinamic TMC2130 and TMC2208 drivers for error conditions,

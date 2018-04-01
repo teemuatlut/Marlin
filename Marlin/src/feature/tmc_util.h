@@ -24,13 +24,17 @@
 #define _TMC_UTIL_H_
 
 #include "../inc/MarlinConfigPre.h"
-
+/*
 #if ENABLED(HAVE_TMC2130)
   #include <TMC2130Stepper.h>
 #endif
 
 #if ENABLED(HAVE_TMC2208)
   #include <TMC2208Stepper.h>
+#endif
+*/
+#if HAVE_TRINAMIC //ENABLED(HAVE_TMC2660)
+  #include <TMCStepper.h>
 #endif
 
 extern bool report_tmc_status;
@@ -50,11 +54,11 @@ void _tmc_say_sgt(const TMC_AxisEnum axis, const int8_t sgt);
 
 template<typename TMC>
 void tmc_get_current(TMC &st, const TMC_AxisEnum axis) {
-  _tmc_say_current(axis, st.getCurrent());
+  _tmc_say_current(axis, st.getMilliAmps());
 }
 template<typename TMC>
 void tmc_set_current(TMC &st, const TMC_AxisEnum axis, const int mA) {
-  st.setCurrent(mA, R_SENSE, HOLD_MULTIPLIER);
+  st.rms_current(mA);
 }
 template<typename TMC>
 void tmc_report_otpw(TMC &st, const TMC_AxisEnum axis) {

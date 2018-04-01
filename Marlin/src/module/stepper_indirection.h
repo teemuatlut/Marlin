@@ -58,14 +58,21 @@
 #endif
 
 #if ENABLED(HAVE_TMC2130)
-  #include <TMC2130Stepper.h>
+  //#include <TMC2130Stepper.h>
+  #include <TMCStepper.h>
   void tmc2130_init_to_defaults();
 #endif
 
 #if ENABLED(HAVE_TMC2208)
-  #include <TMC2208Stepper.h>
+  //#include <TMC2208Stepper.h>
+  #include <TMCStepper.h>
   void tmc2208_serial_begin();
   void tmc2208_init_to_defaults();
+#endif
+
+#if ENABLED(HAVE_TMC2660)
+  #include <TMCStepper.h>
+  void tmc2660_init_to_defaults();
 #endif
 
 // L6470 has STEP on normal pins, but DIR/ENABLE via SPI
@@ -96,6 +103,8 @@ void reset_stepper_drivers();    // Called by settings.load / settings.reset
   #else
     #if ENABLED(X_IS_TMC2130)
       extern TMC2130Stepper stepperX;
+    #elif ENABLED(X_IS_TMC2660)
+      extern TMC2660Stepper stepperX;
     #elif ENABLED(X_IS_TMC2208)
       extern TMC2208Stepper stepperX;
     #endif
@@ -129,6 +138,8 @@ void reset_stepper_drivers();    // Called by settings.load / settings.reset
   #else
     #if ENABLED(Y_IS_TMC2130)
       extern TMC2130Stepper stepperY;
+    #elif ENABLED(Y_IS_TMC2660)
+      extern TMC2660Stepper stepperY;
     #elif ENABLED(Y_IS_TMC2208)
       extern TMC2208Stepper stepperY;
     #endif
@@ -162,6 +173,8 @@ void reset_stepper_drivers();    // Called by settings.load / settings.reset
   #else
     #if ENABLED(Z_IS_TMC2130)
       extern TMC2130Stepper stepperZ;
+    #elif ENABLED(Z_IS_TMC2660)
+      extern TMC2660Stepper stepperZ;
     #elif ENABLED(Z_IS_TMC2208)
       extern TMC2208Stepper stepperZ;
     #endif
@@ -196,6 +209,8 @@ void reset_stepper_drivers();    // Called by settings.load / settings.reset
     #else
       #if ENABLED(X2_IS_TMC2130)
         extern TMC2130Stepper stepperX2;
+      #elif ENABLED(X2_IS_TMC2660)
+        extern TMC2660Stepper stepperX2;
       #elif ENABLED(X2_IS_TMC2208)
         extern TMC2208Stepper stepperX2;
       #endif
@@ -231,6 +246,8 @@ void reset_stepper_drivers();    // Called by settings.load / settings.reset
     #else
       #if ENABLED(Y2_IS_TMC2130)
         extern TMC2130Stepper stepperY2;
+      #elif ENABLED(Y2_IS_TMC2660)
+        extern TMC2660Stepper stepperY2;
       #elif ENABLED(Y2_IS_TMC2208)
         extern TMC2208Stepper stepperY2;
       #endif
@@ -266,6 +283,8 @@ void reset_stepper_drivers();    // Called by settings.load / settings.reset
     #else
       #if ENABLED(Z2_IS_TMC2130)
         extern TMC2130Stepper stepperZ2;
+      #elif ENABLED(X_IS_TMC2660)
+        extern TMC2660Stepper stepperZ2;
       #elif ENABLED(Z2_IS_TMC2208)
         extern TMC2208Stepper stepperZ2;
       #endif
@@ -300,6 +319,8 @@ void reset_stepper_drivers();    // Called by settings.load / settings.reset
   #else
     #if ENABLED(E0_IS_TMC2130)
       extern TMC2130Stepper stepperE0;
+    #elif ENABLED(E0_IS_TMC2660)
+      extern TMC2660Stepper stepperE0;
     #elif ENABLED(E0_IS_TMC2208)
       extern TMC2208Stepper stepperE0;
     #endif
@@ -333,6 +354,8 @@ void reset_stepper_drivers();    // Called by settings.load / settings.reset
   #else
     #if ENABLED(E1_IS_TMC2130)
       extern TMC2130Stepper stepperE1;
+    #elif ENABLED(E1_IS_TMC2660)
+      extern TMC2660Stepper stepperE1;
     #elif ENABLED(E1_IS_TMC2208)
       extern TMC2208Stepper stepperE1;
     #endif
@@ -366,6 +389,8 @@ void reset_stepper_drivers();    // Called by settings.load / settings.reset
   #else
     #if ENABLED(E2_IS_TMC2130)
       extern TMC2130Stepper stepperE2;
+    #elif ENABLED(E2_IS_TMC2660)
+      extern TMC2660Stepper stepperE2;
     #elif ENABLED(E2_IS_TMC2208)
       extern TMC2208Stepper stepperE2;
     #endif
@@ -399,6 +424,8 @@ void reset_stepper_drivers();    // Called by settings.load / settings.reset
   #else
     #if ENABLED(E3_IS_TMC2130)
       extern TMC2130Stepper stepperE3;
+    #elif ENABLED(E3_IS_TMC2660)
+      extern TMC2660Stepper stepperE3;
     #elif ENABLED(E3_IS_TMC2208)
       extern TMC2208Stepper stepperE3;
     #endif
@@ -432,6 +459,8 @@ void reset_stepper_drivers();    // Called by settings.load / settings.reset
   #else
     #if ENABLED(E4_IS_TMC2130)
       extern TMC2130Stepper stepperE4;
+    #elif ENABLED(E4_IS_TMC2660)
+      extern TMC2660Stepper stepperE4;
     #elif ENABLED(E4_IS_TMC2208)
       extern TMC2208Stepper stepperE4;
     #endif
