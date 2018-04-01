@@ -139,9 +139,9 @@
   #endif
 
   #if ENABLED(TMC_USE_SW_SPI)
-    #define _TMC2130_DEFINE(ST) TMC2130Stepper stepper##ST(ST##_CS_PIN, TMC_SW_MOSI, TMC_SW_MISO, TMC_SW_SCK)
+    #define _TMC2130_DEFINE(ST) TMC2130Stepper stepper##ST(ST##_CS_PIN, R_SENSE, TMC_SW_MOSI, TMC_SW_MISO, TMC_SW_SCK)
   #else
-    #define _TMC2130_DEFINE(ST) TMC2130Stepper stepper##ST(ST##_CS_PIN)
+    #define _TMC2130_DEFINE(ST) TMC2130Stepper stepper##ST(ST##_CS_PIN, R_SENSE)
   #endif
 
   // Stepper objects of TMC2130 steppers used
@@ -495,9 +495,9 @@
   #include "../core/enum.h"
 
   #if ENABLED(TMC_USE_SW_SPI)
-    #define _TMC2660_DEFINE(ST) TMC2660Stepper stepper##ST(ST##_CS_PIN, TMC_SW_MOSI, TMC_SW_MISO, TMC_SW_SCK)
+    #define _TMC2660_DEFINE(ST) TMC2660Stepper stepper##ST(ST##_CS_PIN, R_SENSE, TMC_SW_MOSI, TMC_SW_MISO, TMC_SW_SCK)
   #else
-    #define _TMC2660_DEFINE(ST) TMC2660Stepper stepper##ST(ST##_CS_PIN)
+    #define _TMC2660_DEFINE(ST) TMC2660Stepper stepper##ST(ST##_CS_PIN, R_SENSE)
   #endif
 
   // Stepper objects of TMC2130 steppers used
