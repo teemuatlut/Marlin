@@ -26,15 +26,37 @@
 
 #include "../../gcode.h"
 #include "../../../feature/tmc_util.h"
+#include "../../../module/stepper_indirection.h"
 
 /**
  * M122: Debug TMC drivers
  */
 void GcodeSuite::M122() {
+  /*
   if (parser.seen('S'))
     tmc_set_report_status(parser.value_bool());
   else
     tmc_report_all();
+  */
+  if (parser.seen('R')) {
+    SERIAL_ECHOLNPGM("Raw registers:");
+    #if ENABLED(X_IS_TMC2660)
+      SERIAL_ECHOPGM("stepperX.sgcsconf=");
+      SERIAL_ECHO_F(stepperX.SGCSCONF(), HEX);
+    #endif
+    #if ENABLED(Y_IS_TMC2660)
+      SERIAL_ECHOPGM("stepperY.sgcsconf=");
+      SERIAL_ECHO_F(stepperY.SGCSCONF(), HEX);
+    #endif
+    #if ENABLED(Z_IS_TMC2660)
+      SERIAL_ECHOPGM("stepperZ.sgcsconf=");
+      SERIAL_ECHO_F(stepperZ.SGCSCONF(), HEX);
+    #endif
+    #if ENABLED(E0_IS_TMC2660)
+      SERIAL_ECHOPGM("stepperE0.sgcsconf=");
+      SERIAL_ECHO_F(stepperE0.SGCSCONF(), HEX);
+    #endif
+  }
 }
 
 #endif // TMC_DEBUG

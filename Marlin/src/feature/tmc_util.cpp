@@ -250,7 +250,7 @@ void _tmc_say_sgt(const TMC_AxisEnum axis, const int8_t sgt) {
   SERIAL_PRINTLN(sgt, DEC);
 }
 
-#if ENABLED(TMC_DEBUG)
+#if 0//ENABLED(TMC_DEBUG)
 
   enum TMC_debug_enum : char {
     TMC_CODES,
