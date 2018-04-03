@@ -39,22 +39,30 @@ void GcodeSuite::M122() {
     tmc_report_all();
   */
   if (parser.seen('R')) {
-    SERIAL_ECHOLNPGM("Raw registers:");
+    SERIAL_ECHOPGM("Raw registers:");
     #if ENABLED(X_IS_TMC2660)
-      SERIAL_ECHOPGM("stepperX.sgcsconf=");
+      SERIAL_ECHOPGM("\nstepperX.sgcsconf=0x");
       SERIAL_ECHO_F(stepperX.SGCSCONF(), HEX);
+      SERIAL_ECHOPGM("=");
+      SERIAL_ECHO_F(stepperX.SGCSCONF());
     #endif
     #if ENABLED(Y_IS_TMC2660)
-      SERIAL_ECHOPGM("stepperY.sgcsconf=");
+      SERIAL_ECHOPGM("\nstepperY.sgcsconf=0x");
       SERIAL_ECHO_F(stepperY.SGCSCONF(), HEX);
+      SERIAL_ECHOPGM("=");
+      SERIAL_ECHO_F(stepperY.SGCSCONF());
     #endif
     #if ENABLED(Z_IS_TMC2660)
-      SERIAL_ECHOPGM("stepperZ.sgcsconf=");
+      SERIAL_ECHOPGM("\nstepperZ.sgcsconf=0x");
       SERIAL_ECHO_F(stepperZ.SGCSCONF(), HEX);
+      SERIAL_ECHOPGM("=");
+      SERIAL_ECHO_F(stepperZ.SGCSCONF());
     #endif
     #if ENABLED(E0_IS_TMC2660)
-      SERIAL_ECHOPGM("stepperE0.sgcsconf=");
+      SERIAL_ECHOPGM("\nstepperE0.sgcsconf=0x");
       SERIAL_ECHO_F(stepperE0.SGCSCONF(), HEX);
+      SERIAL_ECHOPGM("=");
+      SERIAL_ECHO_F(stepperE0.SGCSCONF());
     #endif
   }
 }
