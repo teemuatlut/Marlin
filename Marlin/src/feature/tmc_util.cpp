@@ -250,7 +250,7 @@ void _tmc_say_sgt(const TMC_AxisEnum axis, const int8_t sgt) {
   SERIAL_PRINTLN(sgt, DEC);
 }
 
-#if 0//ENABLED(TMC_DEBUG)
+#if ENABLED(TMC_DEBUG)
 
   enum TMC_debug_enum : char {
     TMC_CODES,
@@ -326,6 +326,7 @@ void _tmc_say_sgt(const TMC_AxisEnum axis, const int8_t sgt) {
         case TMC_STALLGUARD: if (st.stallguard()) SERIAL_CHAR('X'); break;
         case TMC_SG_RESULT:  SERIAL_PRINT(st.sg_result(), DEC);   break;
         case TMC_FSACTIVE:   if (st.fsactive())   SERIAL_CHAR('X'); break;
+        case TMC_DRV_CS_ACTUAL: SERIAL_PRINT(st.cs_actual(), DEC); break;
         default: break;
       }
     }
@@ -348,9 +349,14 @@ void _tmc_say_sgt(const TMC_AxisEnum axis, const int8_t sgt) {
         case TMC_T150: if (st.t150()) SERIAL_CHAR('X'); break;
         case TMC_T143: if (st.t143()) SERIAL_CHAR('X'); break;
         case TMC_T120: if (st.t120()) SERIAL_CHAR('X'); break;
+        case TMC_DRV_CS_ACTUAL: SERIAL_PRINT(st.cs_actual(), DEC); break;
         default: break;
       }
     }
+  #endif
+
+  #if ENABLED(HAVE_TMC2660)
+    static void tmc_parse_drv_status(TMC2660Stepper &st, const TMC_drv_status_enum i) { }
   #endif
 
   template <typename TMC>
@@ -359,7 +365,7 @@ void _tmc_say_sgt(const TMC_AxisEnum axis, const int8_t sgt) {
     switch (i) {
       case TMC_CODES: _tmc_say_axis(axis); break;
       case TMC_ENABLED: serialprintPGM(st.isEnabled() ? PSTR("true") : PSTR("false")); break;
-      case TMC_CURRENT: SERIAL_ECHO(st.getCurrent()); break;
+      case TMC_CURRENT: SERIAL_ECHO(st.getMilliAmps()); break;
       case TMC_RMS_CURRENT: SERIAL_PROTOCOL(st.rms_current()); break;
       case TMC_MAX_CURRENT: SERIAL_PRINT((float)st.rms_current() * 1.41, 0); break;
       case TMC_IRUN:
@@ -398,6 +404,33 @@ void _tmc_say_sgt(const TMC_AxisEnum axis, const int8_t sgt) {
     }
   }
 
+  template<>
+  void tmc_status(TMC2660Stepper &st, const TMC_AxisEnum axis, const TMC_debug_enum i, const float spmm) {
+    UNUSED(spmm);
+    SERIAL_ECHO('\t');
+    switch (i) {
+      case TMC_CODES: _tmc_say_axis(axis); break;
+      case TMC_ENABLED: serialprintPGM(st.isEnabled() ? PSTR("true") : PSTR("false")); break;
+      case TMC_CURRENT: SERIAL_ECHO(st.getMilliAmps()); break;
+      case TMC_RMS_CURRENT: SERIAL_PROTOCOL(st.rms_current()); break;
+      case TMC_MAX_CURRENT: SERIAL_PRINT((float)st.rms_current() * 1.41, 0); break;
+      case TMC_IRUN:
+        SERIAL_PRINT(st.cs(), DEC);
+        SERIAL_ECHOPGM("/31");
+        break;
+      case TMC_VSENSE: serialprintPGM(st.vsense() ? PSTR("1=.18") : PSTR("0=.325")); break;
+      case TMC_MICROSTEPS: SERIAL_ECHO(st.microsteps()); break;
+      //case TMC_OTPW: serialprintPGM(st.otpw() ? PSTR("true") : PSTR("false")); break;
+      //case TMC_OTPW_TRIGGERED: serialprintPGM(st.getOTPW() ? PSTR("true") : PSTR("false")); break;
+      case TMC_SGT: SERIAL_PRINT(st.sgt(), DEC); break;
+      case TMC_TOFF: SERIAL_PRINT(st.toff(), DEC); break;
+      case TMC_TBL: SERIAL_PRINT(st.blank_time(), DEC); break;
+      case TMC_HEND: SERIAL_PRINT(st.hysteresis_end(), DEC); break;
+      case TMC_HSTRT: SERIAL_PRINT(st.hysteresis_start(), DEC); break;
+      default: break;
+    }
+  }
+
   template <typename TMC>
   static void tmc_parse_drv_status(TMC &st, const TMC_AxisEnum axis, const TMC_drv_status_enum i) {
     SERIAL_CHAR('\t');
@@ -410,7 +443,6 @@ void _tmc_say_sgt(const TMC_AxisEnum axis, const int8_t sgt) {
       case TMC_S2GA:          if (st.s2ga())         SERIAL_CHAR('X'); break;
       case TMC_DRV_OTPW:      if (st.otpw())         SERIAL_CHAR('X'); break;
       case TMC_OT:            if (st.ot())           SERIAL_CHAR('X'); break;
-      case TMC_DRV_CS_ACTUAL: SERIAL_PRINT(st.cs_actual(), DEC);       break;
       case TMC_DRV_STATUS_HEX:drv_status_print_hex(axis, st.DRV_STATUS()); break;
       default: tmc_parse_drv_status(st, i); break;
     }
