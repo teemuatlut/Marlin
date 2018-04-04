@@ -732,58 +732,58 @@ void MarlinSettings::postprocess() {
     _FIELD_TEST(tmc_hybrid_threshold);
 
     uint32_t tmc_hybrid_threshold[TMC_AXES] = {
-      #if HAS_HYBRID_THRS
-        #if X_HAS_HYBRID_THRS
+      #if HAS_STEALTHCHOP
+        #if X_HAS_STEALTHCHOP
           TMC_GET_PWMTHRS(X, X),
         #else
           X_HYBRID_THRESHOLD,
         #endif
-        #if Y_HAS_HYBRID_THRS
+        #if Y_HAS_STEALTHCHOP
           TMC_GET_PWMTHRS(Y, Y),
         #else
           Y_HYBRID_THRESHOLD,
         #endif
-        #if Z_HAS_HYBRID_THRS
+        #if Z_HAS_STEALTHCHOP
           TMC_GET_PWMTHRS(Z, Z),
         #else
           Z_HYBRID_THRESHOLD,
         #endif
-        #if X2_HAS_HYBRID_THRS
+        #if X2_HAS_STEALTHCHOP
           TMC_GET_PWMTHRS(X, X2),
         #else
           X2_HYBRID_THRESHOLD,
         #endif
-        #if Y2_HAS_HYBRID_THRS
+        #if Y2_HAS_STEALTHCHOP
           TMC_GET_PWMTHRS(Y, Y2),
         #else
           Y2_HYBRID_THRESHOLD,
         #endif
-        #if Z2_HAS_HYBRID_THRS
+        #if Z2_HAS_STEALTHCHOP
           TMC_GET_PWMTHRS(Z, Z2),
         #else
           Z2_HYBRID_THRESHOLD,
         #endif
-        #if E0_HAS_HYBRID_THRS
+        #if E0_HAS_STEALTHCHOP
           TMC_GET_PWMTHRS(E, E0),
         #else
           E0_HYBRID_THRESHOLD,
         #endif
-        #if E1_HAS_HYBRID_THRS
+        #if E1_HAS_STEALTHCHOP
           TMC_GET_PWMTHRS(E, E1),
         #else
           E1_HYBRID_THRESHOLD,
         #endif
-        #if E2_HAS_HYBRID_THRS
+        #if E2_HAS_STEALTHCHOP
           TMC_GET_PWMTHRS(E, E2),
         #else
           E2_HYBRID_THRESHOLD,
         #endif
-        #if E3_HAS_HYBRID_THRS
+        #if E3_HAS_STEALTHCHOP
           TMC_GET_PWMTHRS(E, E3),
         #else
           E3_HYBRID_THRESHOLD,
         #endif
-        #if E4_HAS_HYBRID_THRS
+        #if E4_HAS_STEALTHCHOP
           TMC_GET_PWMTHRS(E, E4)
         #else
           E4_HYBRID_THRESHOLD
@@ -1325,42 +1325,42 @@ void MarlinSettings::postprocess() {
         for (uint8_t q=TMC_AXES; q--;) EEPROM_READ(val);
       #endif
 
-      #if HAS_HYBRID_THRS
+      #if HAS_STEALTHCHOP
         #define TMC_SET_PWMTHRS(P,Q) tmc_set_pwmthrs(stepper##Q, TMC_##Q, tmc_hybrid_threshold[TMC_##Q], planner.axis_steps_per_mm[P##_AXIS])
         uint32_t tmc_hybrid_threshold[TMC_AXES];
         EEPROM_READ(tmc_hybrid_threshold);
         if (!validating) {
-          #if X_HAS_HYBRID_THRS
+          #if X_HAS_STEALTHCHOP
             TMC_SET_PWMTHRS(X, X);
           #endif
-          #if Y_HAS_HYBRID_THRS
+          #if Y_HAS_STEALTHCHOP
             TMC_SET_PWMTHRS(Y, Y);
           #endif
-          #if Z_HAS_HYBRID_THRS
+          #if Z_HAS_STEALTHCHOP
             TMC_SET_PWMTHRS(Z, Z);
           #endif
-          #if X2_HAS_HYBRID_THRS
+          #if X2_HAS_STEALTHCHOP
             TMC_SET_PWMTHRS(X, X2);
           #endif
-          #if Y2_HAS_HYBRID_THRS
+          #if Y2_HAS_STEALTHCHOP
             TMC_SET_PWMTHRS(Y, Y2);
           #endif
-          #if Z2_HAS_HYBRID_THRS
+          #if Z2_HAS_STEALTHCHOP
             TMC_SET_PWMTHRS(Z, Z2);
           #endif
-          #if E0_HAS_HYBRID_THRS
+          #if E0_HAS_STEALTHCHOP
             TMC_SET_PWMTHRS(E, E0);
           #endif
-          #if E1_HAS_HYBRID_THRS
+          #if E1_HAS_STEALTHCHOP
             TMC_SET_PWMTHRS(E, E1);
           #endif
-          #if E2_HAS_HYBRID_THRS
+          #if E2_HAS_STEALTHCHOP
             TMC_SET_PWMTHRS(E, E2);
           #endif
-          #if E3_HAS_HYBRID_THRS
+          #if E3_HAS_STEALTHCHOP
             TMC_SET_PWMTHRS(E, E3);
           #endif
-          #if E4_HAS_HYBRID_THRS
+          #if E4_HAS_STEALTHCHOP
             TMC_SET_PWMTHRS(E, E4);
           #endif
         }
@@ -2435,47 +2435,47 @@ void MarlinSettings::reset(PORTARG_SOLO) {
         SERIAL_ECHOLNPGM_P(port, "Hybrid Threshold:");
       }
       CONFIG_ECHO_START;
-      #if X_HAS_HYBRID_THRS
+      #if X_HAS_STEALTHCHOP
         say_M913(PORTVAR_SOLO);
         SERIAL_ECHOLNPAIR_P(port, "X", TMC_GET_PWMTHRS(X, X));
       #endif
-      #if X2_HAS_HYBRID_THRS
+      #if X2_HAS_STEALTHCHOP
         say_M913(PORTVAR_SOLO);
         SERIAL_ECHOLNPAIR_P(port, "I1 X", TMC_GET_PWMTHRS(X, X2));
       #endif
-      #if Y_HAS_HYBRID_THRS
+      #if Y_HAS_STEALTHCHOP
         say_M913(PORTVAR_SOLO);
         SERIAL_ECHOLNPAIR_P(port, "Y", TMC_GET_PWMTHRS(Y, Y));
       #endif
-      #if Y2_HAS_HYBRID_THRS
+      #if Y2_HAS_STEALTHCHOP
         say_M913(PORTVAR_SOLO);
         SERIAL_ECHOLNPAIR_P(port, "I1 Y", TMC_GET_PWMTHRS(Y, Y2));
       #endif
-      #if Z_HAS_HYBRID_THRS
+      #if Z_HAS_STEALTHCHOP
         say_M913(PORTVAR_SOLO);
         SERIAL_ECHOLNPAIR_P(port, "Z", TMC_GET_PWMTHRS(Z, Z));
       #endif
-      #if Z2_HAS_HYBRID_THRS
+      #if Z2_HAS_STEALTHCHOP
         say_M913(PORTVAR_SOLO);
         SERIAL_ECHOLNPAIR_P(port, "I1 Z", TMC_GET_PWMTHRS(Z, Z2));
       #endif
-      #if E0_HAS_HYBRID_THRS
+      #if E0_HAS_STEALTHCHOP
         say_M913(PORTVAR_SOLO);
         SERIAL_ECHOLNPAIR_P(port, "T0 E", TMC_GET_PWMTHRS(E, E0));
       #endif
-      #if E_STEPPERS > 1 && E1_HAS_HYBRID_THRS
+      #if E_STEPPERS > 1 && E1_HAS_STEALTHCHOP
         say_M913(PORTVAR_SOLO);
         SERIAL_ECHOLNPAIR_P(port, "T1 E", TMC_GET_PWMTHRS(E, E1));
       #endif
-      #if E_STEPPERS > 2 && E2_HAS_HYBRID_THRS
+      #if E_STEPPERS > 2 && E2_HAS_STEALTHCHOP
         say_M913(PORTVAR_SOLO);
         SERIAL_ECHOLNPAIR_P(port, "T2 E", TMC_GET_PWMTHRS(E, E2));
       #endif
-      #if E_STEPPERS > 3 && E3_HAS_HYBRID_THRS
+      #if E_STEPPERS > 3 && E3_HAS_STEALTHCHOP
         say_M913(PORTVAR_SOLO);
         SERIAL_ECHOLNPAIR_P(port, "T3 E", TMC_GET_PWMTHRS(E, E3));
       #endif
-      #if E_STEPPERS > 4 && E4_HAS_HYBRID_THRS
+      #if E_STEPPERS > 4 && E4_HAS_STEALTHCHOP
         say_M913(PORTVAR_SOLO);
         SERIAL_ECHOLNPAIR_P(port, "T4 E", TMC_GET_PWMTHRS(E, E4));
       #endif
