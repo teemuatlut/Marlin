@@ -99,7 +99,7 @@ void reset_stepper_drivers();    // Called by settings.load / settings.reset
   #elif ENABLED(X_IS_TMC2660)
     extern TMC2660Stepper stepperX;
     #define X_ENABLE_INIT NOOP
-    #define X_ENABLE_WRITE(STATE) stepperX.toff(STATE ? stepperX.savedToff() : 0)
+    #define X_ENABLE_WRITE(STATE) stepperX.toff(STATE==X_ENABLE_ON ? stepperX.savedToff() : 0)
     #define X_ENABLE_READ stepperX.isEnabled()
   #else
     #if ENABLED(X_IS_TMC2130)
