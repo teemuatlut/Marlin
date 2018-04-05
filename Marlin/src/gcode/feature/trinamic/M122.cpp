@@ -44,25 +44,25 @@ void GcodeSuite::M122() {
       SERIAL_ECHOPGM("\nstepperX.sgcsconf=0x");
       SERIAL_ECHO_F(stepperX.SGCSCONF(), HEX);
       SERIAL_ECHOPGM("=");
-      SERIAL_ECHO_F(stepperX.SGCSCONF());
+      SERIAL_ECHO(stepperX.SGCSCONF());
     #endif
     #if ENABLED(Y_IS_TMC2660)
       SERIAL_ECHOPGM("\nstepperY.sgcsconf=0x");
       SERIAL_ECHO_F(stepperY.SGCSCONF(), HEX);
       SERIAL_ECHOPGM("=");
-      SERIAL_ECHO_F(stepperY.SGCSCONF());
+      SERIAL_ECHO(stepperY.SGCSCONF());
     #endif
     #if ENABLED(Z_IS_TMC2660)
       SERIAL_ECHOPGM("\nstepperZ.sgcsconf=0x");
       SERIAL_ECHO_F(stepperZ.SGCSCONF(), HEX);
       SERIAL_ECHOPGM("=");
-      SERIAL_ECHO_F(stepperZ.SGCSCONF());
+      SERIAL_ECHO(stepperZ.SGCSCONF());
     #endif
     #if ENABLED(E0_IS_TMC2660)
       SERIAL_ECHOPGM("\nstepperE0.sgcsconf=0x");
       SERIAL_ECHO_F(stepperE0.SGCSCONF(), HEX);
       SERIAL_ECHOPGM("=");
-      SERIAL_ECHO_F(stepperE0.SGCSCONF());
+      SERIAL_ECHO(stepperE0.SGCSCONF());
     #endif
   }
 }
