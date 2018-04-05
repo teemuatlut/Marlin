@@ -32,13 +32,9 @@
  * M122: Debug TMC drivers
  */
 void GcodeSuite::M122() {
-  /*
   if (parser.seen('S'))
     tmc_set_report_status(parser.value_bool());
-  else
-    tmc_report_all();
-  */
-  if (parser.seen('R')) {
+  else if (parser.seen('R')) {
     SERIAL_ECHOPGM("Raw registers:");
     #if ENABLED(X_IS_TMC2660)
       SERIAL_ECHOPGM("\nstepperX.sgcsconf=0x");
@@ -64,7 +60,8 @@ void GcodeSuite::M122() {
       SERIAL_ECHOPGM("=");
       SERIAL_ECHO(stepperE0.SGCSCONF());
     #endif
-  }
+  } else
+    tmc_report_all();
 }
 
 #endif // TMC_DEBUG
