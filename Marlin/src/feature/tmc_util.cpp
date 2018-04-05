@@ -93,6 +93,23 @@ bool report_tmc_status = false;
       return data;
     }
   #endif
+  #if ENABLED(HAVE_TMC2660)
+    static uint32_t get_pwm_scale(TMC2660Stepper &st) { UNUSED(st); return 0; }
+    static uint8_t get_status_response(TMC2660Stepper &st) { UNUSED(st); return 0; }
+    static TMC_driver_data get_driver_data(TMC2660Stepper &st) {
+      constexpr uint32_t OTPW_bm = 0x4UL;
+      constexpr uint8_t OTPW_bp = 2;
+      constexpr uint32_t OT_bm = 0x2UL;
+      constexpr uint8_t OT_bp = 1;
+      constexpr uint8_t DRIVER_ERROR_bm = 0x1EUL;
+      TMC_driver_data data;
+      data.drv_status = st.DRVSTATUS();
+      data.is_otpw = (data.drv_status & OTPW_bm) >> OTPW_bp;
+      data.is_ot = (data.drv_status & OT_bm) >> OT_bp;
+      data.is_error = data.drv_status & DRIVER_ERROR_bm;
+      return data;
+    }
+  #endif
 
   template<typename TMC>
   void monitor_tmc_driver(TMC &st, const TMC_AxisEnum axis, uint8_t &otpw_cnt) {
