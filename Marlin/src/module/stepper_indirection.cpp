@@ -197,17 +197,23 @@
     st.power_down_delay(128); // ~2s until driver lowers to hold current
     st.hysteresis_start(3);
     st.hysteresis_end(2);
+    st.stealth_freq(1); // f_pwm = 2/683 f_clk
+    st.stealth_autoscale(1);
+    st.stealth_gradient(5);
+    st.stealth_amplitude(255);
+    st.coolstep_min_speed(0xFFFFF);
+    st.semax(REDUCE_CURRENT_THRS);
     #if ENABLED(STEALTHCHOP)
-      st.stealth_freq(1); // f_pwm = 2/683 f_clk
-      st.stealth_autoscale(1);
-      st.stealth_gradient(5);
-      st.stealth_amplitude(255);
       st.stealthChop(1);
-      #if ENABLED(HYBRID_THRESHOLD)
-        st.stealth_max_speed(12650000UL*microsteps/(256*thrs*spmm));
-      #endif
-    #elif ENABLED(SENSORLESS_HOMING)
-      st.coolstep_min_speed(1024UL * 1024UL - 1UL);
+    #endif
+    #if ENABLED(ADAPTIVE_CURRENT)
+      st.semin(INCREASE_CURRENT_THRS);
+    #endif
+    #if ENABLED(HYBRID_THRESHOLD)
+      st.stealth_max_speed(12650000UL*microsteps/(256*thrs*spmm));
+    #else
+      UNUSED(thrs);
+      UNUSED(spmm);
     #endif
     st.GSTAT(); // Clear GSTAT
   }
