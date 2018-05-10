@@ -2193,7 +2193,7 @@ void MarlinSettings::reset(PORTARG_SOLO) {
           SERIAL_ECHOLNPGM_P(port, " meshes.\n");
         }
 
-        ubl.report_current_mesh(PORTVAR_SOLO);
+        //ubl.report_current_mesh(PORTVAR_SOLO);
 
       #elif ENABLED(AUTO_BED_LEVELING_BILINEAR)
 
