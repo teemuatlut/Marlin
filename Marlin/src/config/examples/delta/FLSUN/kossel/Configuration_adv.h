@@ -1281,7 +1281,7 @@
    */
   #define TMC_ADV() {  }
 
-#endif // HAS_TRINAMIC // TMC2130, TMC2208
+#endif // HAS_TRINAMIC
 
 // @section L6470
 
