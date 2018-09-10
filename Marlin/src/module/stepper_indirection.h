@@ -57,15 +57,17 @@
   void tmc26x_init_to_defaults();
 #endif
 
-#if HAS_DRIVER(TMC2130)
-  #include <TMC2130Stepper.h>
-  void tmc2130_init_to_defaults();
-#endif
+#if HAS_TRINAMIC
+  #include <TMCStepper.h>
 
-#if HAS_DRIVER(TMC2208)
-  #include <TMC2208Stepper.h>
-  void tmc2208_serial_begin();
-  void tmc2208_init_to_defaults();
+  #if TMCSTEPPER_VERSION < 0x000001
+    #error "Update TMCStepper library to 0.0.1 or newer."
+  #endif
+
+  #endif
+  #if HAS_DRIVER(TMC2208)
+    void tmc2208_serial_begin();
+  #endif
 #endif
 
 // L6470 has STEP on normal pins, but DIR/ENABLE via SPI

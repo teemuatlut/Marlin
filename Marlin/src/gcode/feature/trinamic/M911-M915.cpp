@@ -332,12 +332,12 @@ void GcodeSuite::M912() {
     }
 
     #if AXIS_IS_TMC(Z)
-      const uint16_t Z_current_1 = stepperZ.getCurrent();
-      stepperZ.setCurrent(_rms, R_SENSE, HOLD_MULTIPLIER);
+      const uint16_t Z_current_1 = stepperZ.getMilliamps();
+      stepperZ.rms_current(_rms);
     #endif
     #if AXIS_IS_TMC(Z2)
-      const uint16_t Z2_current_1 = stepperZ2.getCurrent();
-      stepperZ2.setCurrent(_rms, R_SENSE, HOLD_MULTIPLIER);
+      const uint16_t Z2_current_1 = stepperZ2.getMilliamps();
+      stepperZ2.rms_current(_rms);
     #endif
 
     SERIAL_ECHOPAIR("\nCalibration current: Z", _rms);
@@ -347,10 +347,10 @@ void GcodeSuite::M912() {
     do_blocking_move_to_z(Z_MAX_POS+_z);
 
     #if AXIS_IS_TMC(Z)
-      stepperZ.setCurrent(Z_current_1, R_SENSE, HOLD_MULTIPLIER);
+      stepperZ.rms_current(Z_current_1);
     #endif
     #if AXIS_IS_TMC(Z2)
-      stepperZ2.setCurrent(Z2_current_1, R_SENSE, HOLD_MULTIPLIER);
+      stepperZ2.rms_current(Z2_current_1);
     #endif
 
     do_blocking_move_to_z(Z_MAX_POS);

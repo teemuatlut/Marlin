@@ -703,7 +703,7 @@ void MarlinSettings::postprocess() {
     #endif
 
     //
-    // Save TMC2130 or TMC2208 Configuration, and placeholder values
+    // Save TMC Configuration, and placeholder values
     //
 
     _FIELD_TEST(tmc_stepper_current);
@@ -711,57 +711,57 @@ void MarlinSettings::postprocess() {
     uint16_t tmc_stepper_current[TMC_AXES] = {
       #if HAS_TRINAMIC
         #if AXIS_IS_TMC(X)
-          stepperX.getCurrent(),
+          stepperX.getMilliamps(),
         #else
           0,
         #endif
         #if AXIS_IS_TMC(Y)
-          stepperY.getCurrent(),
+          stepperY.getMilliamps(),
         #else
           0,
         #endif
         #if AXIS_IS_TMC(Z)
-          stepperZ.getCurrent(),
+          stepperZ.getMilliamps(),
         #else
           0,
         #endif
         #if AXIS_IS_TMC(X2)
-          stepperX2.getCurrent(),
+          stepperX2.getMilliamps(),
         #else
           0,
         #endif
         #if AXIS_IS_TMC(Y2)
-          stepperY2.getCurrent(),
+          stepperY2.getMilliamps(),
         #else
           0,
         #endif
         #if AXIS_IS_TMC(Z2)
-          stepperZ2.getCurrent(),
+          stepperZ2.getMilliamps(),
         #else
           0,
         #endif
         #if AXIS_IS_TMC(E0)
-          stepperE0.getCurrent(),
+          stepperE0.getMilliamps(),
         #else
           0,
         #endif
         #if AXIS_IS_TMC(E1)
-          stepperE1.getCurrent(),
+          stepperE1.getMilliamps(),
         #else
           0,
         #endif
         #if AXIS_IS_TMC(E2)
-          stepperE2.getCurrent(),
+          stepperE2.getMilliamps(),
         #else
           0,
         #endif
         #if AXIS_IS_TMC(E3)
-          stepperE3.getCurrent(),
+          stepperE3.getMilliamps(),
         #else
           0,
         #endif
         #if AXIS_IS_TMC(E4)
-          stepperE4.getCurrent()
+          stepperE4.getMilliamps()
         #else
           0
         #endif
@@ -772,7 +772,7 @@ void MarlinSettings::postprocess() {
     EEPROM_WRITE(tmc_stepper_current);
 
     //
-    // Save TMC2130 or TMC2208 Hybrid Threshold, and placeholder values
+    // Save TMC Hybrid Threshold, and placeholder values
     //
 
     _FIELD_TEST(tmc_hybrid_threshold);
@@ -843,7 +843,7 @@ void MarlinSettings::postprocess() {
     EEPROM_WRITE(tmc_hybrid_threshold);
 
     //
-    // TMC2130 Sensorless homing threshold
+    // TMC Sensorless homing threshold
     //
     int16_t tmc_sgt[XYZ] = {
       #if ENABLED(SENSORLESS_HOMING)
@@ -1337,14 +1337,14 @@ void MarlinSettings::postprocess() {
       if (!validating) reset_stepper_drivers();
 
       //
-      // TMC2130 Stepper Settings
+      // TMC Stepper Settings
       //
 
       _FIELD_TEST(tmc_stepper_current);
 
       #if HAS_TRINAMIC
 
-        #define SET_CURR(Q) stepper##Q.setCurrent(currents[TMC_##Q] ? currents[TMC_##Q] : Q##_CURRENT, R_SENSE, HOLD_MULTIPLIER)
+        #define SET_CURR(Q) stepper##Q.rms_current(currents[TMC_##Q] ? currents[TMC_##Q] : Q##_CURRENT)
         uint16_t currents[TMC_AXES];
         EEPROM_READ(currents);
         if (!validating) {
@@ -1432,7 +1432,7 @@ void MarlinSettings::postprocess() {
       #endif
 
       /*
-       * TMC2130 Sensorless homing threshold.
+       * TMC Sensorless homing threshold.
        * X and X2 use the same value
        * Y and Y2 use the same value
        * Z and Z2 use the same value
@@ -2544,7 +2544,7 @@ void MarlinSettings::reset(PORTARG_SOLO) {
     #if HAS_TRINAMIC
 
       /**
-       * TMC2130 / TMC2208 stepper driver current
+       * TMC stepper driver current
        */
       if (!forReplay) {
         CONFIG_ECHO_START;
@@ -2555,13 +2555,13 @@ void MarlinSettings::reset(PORTARG_SOLO) {
         say_M906(PORTVAR_SOLO);
       #endif
       #if AXIS_IS_TMC(X)
-        SERIAL_ECHOPAIR_P(port, " X", stepperX.getCurrent());
+        SERIAL_ECHOPAIR_P(port, " X", stepperX.getMilliamps());
       #endif
       #if AXIS_IS_TMC(Y)
-        SERIAL_ECHOPAIR_P(port, " Y", stepperY.getCurrent());
+        SERIAL_ECHOPAIR_P(port, " Y", stepperY.getMilliamps());
       #endif
       #if AXIS_IS_TMC(Z)
-        SERIAL_ECHOPAIR_P(port, " Z", stepperZ.getCurrent());
+        SERIAL_ECHOPAIR_P(port, " Z", stepperZ.getMilliamps());
       #endif
       #if AXIS_IS_TMC(X) || AXIS_IS_TMC(Y) || AXIS_IS_TMC(Z)
         SERIAL_EOL_P(port);
@@ -2571,41 +2571,41 @@ void MarlinSettings::reset(PORTARG_SOLO) {
         SERIAL_ECHOPGM_P(port, " I1");
       #endif
       #if AXIS_IS_TMC(X2)
-        SERIAL_ECHOPAIR_P(port, " X", stepperX2.getCurrent());
+        SERIAL_ECHOPAIR_P(port, " X", stepperX2.getMilliamps());
       #endif
       #if AXIS_IS_TMC(Y2)
-        SERIAL_ECHOPAIR_P(port, " Y", stepperY2.getCurrent());
+        SERIAL_ECHOPAIR_P(port, " Y", stepperY2.getMilliamps());
       #endif
       #if AXIS_IS_TMC(Z2)
-        SERIAL_ECHOPAIR_P(port, " Z", stepperZ2.getCurrent());
+        SERIAL_ECHOPAIR_P(port, " Z", stepperZ2.getMilliamps());
       #endif
       #if AXIS_IS_TMC(X2) || AXIS_IS_TMC(Y2) || AXIS_IS_TMC(Z2)
         SERIAL_EOL_P(port);
       #endif
       #if AXIS_IS_TMC(E0)
         say_M906(PORTVAR_SOLO);
-        SERIAL_ECHOLNPAIR_P(port, " T0 E", stepperE0.getCurrent());
+        SERIAL_ECHOLNPAIR_P(port, " T0 E", stepperE0.getMilliamps());
       #endif
       #if E_STEPPERS > 1 && AXIS_IS_TMC(E1)
         say_M906(PORTVAR_SOLO);
-        SERIAL_ECHOLNPAIR_P(port, " T1 E", stepperE1.getCurrent());
+        SERIAL_ECHOLNPAIR_P(port, " T1 E", stepperE1.getMilliamps());
       #endif
       #if E_STEPPERS > 2 && AXIS_IS_TMC(E2)
         say_M906(PORTVAR_SOLO);
-        SERIAL_ECHOLNPAIR_P(port, " T2 E", stepperE2.getCurrent());
+        SERIAL_ECHOLNPAIR_P(port, " T2 E", stepperE2.getMilliamps());
       #endif
       #if E_STEPPERS > 3 && AXIS_IS_TMC(E3)
         say_M906(PORTVAR_SOLO);
-        SERIAL_ECHOLNPAIR_P(port, " T3 E", stepperE3.getCurrent());
+        SERIAL_ECHOLNPAIR_P(port, " T3 E", stepperE3.getMilliamps());
       #endif
       #if E_STEPPERS > 4 && AXIS_IS_TMC(E4)
         say_M906(PORTVAR_SOLO);
-        SERIAL_ECHOLNPAIR_P(port, " T4 E", stepperE4.getCurrent());
+        SERIAL_ECHOLNPAIR_P(port, " T4 E", stepperE4.getMilliamps());
       #endif
       SERIAL_EOL_P(port);
 
       /**
-       * TMC2130 / TMC2208 / TRAMS Hybrid Threshold
+       * TMC Hybrid Threshold
        */
       #if ENABLED(HYBRID_THRESHOLD)
         if (!forReplay) {
@@ -2616,13 +2616,13 @@ void MarlinSettings::reset(PORTARG_SOLO) {
         #if AXIS_IS_TMC(X) || AXIS_IS_TMC(Y) || AXIS_IS_TMC(Z)
           say_M913(PORTVAR_SOLO);
         #endif
-        #if AXIS_IS_TMC(X)
+        #if AXIS_HAS_STEALTHCHOP(X)
           SERIAL_ECHOPAIR_P(port, " X", TMC_GET_PWMTHRS(X, X));
         #endif
-        #if AXIS_IS_TMC(Y)
+        #if AXIS_HAS_STEALTHCHOP(Y)
           SERIAL_ECHOPAIR_P(port, " Y", TMC_GET_PWMTHRS(Y, Y));
         #endif
-        #if AXIS_IS_TMC(Z)
+        #if AXIS_HAS_STEALTHCHOP(Z)
           SERIAL_ECHOPAIR_P(port, " Z", TMC_GET_PWMTHRS(Z, Z));
         #endif
         #if AXIS_IS_TMC(X) || AXIS_IS_TMC(Y) || AXIS_IS_TMC(Z)
@@ -2632,35 +2632,35 @@ void MarlinSettings::reset(PORTARG_SOLO) {
           say_M913(PORTVAR_SOLO);
           SERIAL_ECHOPGM_P(port, " I1");
         #endif
-        #if AXIS_IS_TMC(X2)
+        #if AXIS_HAS_STEALTHCHOP(X2)
           SERIAL_ECHOPAIR_P(port, " X", TMC_GET_PWMTHRS(X, X2));
         #endif
-        #if AXIS_IS_TMC(Y2)
+        #if AXIS_HAS_STEALTHCHOP(Y2)
           SERIAL_ECHOPAIR_P(port, " Y", TMC_GET_PWMTHRS(Y, Y2));
         #endif
-        #if AXIS_IS_TMC(Z2)
+        #if AXIS_HAS_STEALTHCHOP(Z2)
           SERIAL_ECHOPAIR_P(port, " Z", TMC_GET_PWMTHRS(Z, Z2));
         #endif
         #if AXIS_IS_TMC(X2) || AXIS_IS_TMC(Y2) || AXIS_IS_TMC(Z2)
           SERIAL_EOL_P(port);
         #endif
-        #if AXIS_IS_TMC(E0)
+        #if AXIS_HAS_STEALTHCHOP(E0)
           say_M913(PORTVAR_SOLO);
           SERIAL_ECHOLNPAIR_P(port, " T0 E", TMC_GET_PWMTHRS(E, E0));
         #endif
-        #if E_STEPPERS > 1 && AXIS_IS_TMC(E1)
+        #if E_STEPPERS > 1 && AXIS_HAS_STEALTHCHOP(E1)
           say_M913(PORTVAR_SOLO);
           SERIAL_ECHOLNPAIR_P(port, " T1 E", TMC_GET_PWMTHRS(E, E1));
         #endif
-        #if E_STEPPERS > 2 && AXIS_IS_TMC(E2)
+        #if E_STEPPERS > 2 && AXIS_HAS_STEALTHCHOP(E2)
           say_M913(PORTVAR_SOLO);
           SERIAL_ECHOLNPAIR_P(port, " T2 E", TMC_GET_PWMTHRS(E, E2));
         #endif
-        #if E_STEPPERS > 3 && AXIS_IS_TMC(E3)
+        #if E_STEPPERS > 3 && AXIS_HAS_STEALTHCHOP(E3)
           say_M913(PORTVAR_SOLO);
           SERIAL_ECHOLNPAIR_P(port, " T3 E", TMC_GET_PWMTHRS(E, E3));
         #endif
-        #if E_STEPPERS > 4 && AXIS_IS_TMC(E4)
+        #if E_STEPPERS > 4 && AXIS_HAS_STEALTHCHOP(E4)
           say_M913(PORTVAR_SOLO);
           SERIAL_ECHOLNPAIR_P(port, " T4 E", TMC_GET_PWMTHRS(E, E4));
         #endif
@@ -2668,7 +2668,7 @@ void MarlinSettings::reset(PORTARG_SOLO) {
       #endif // HYBRID_THRESHOLD
 
       /**
-       * TMC2130 Sensorless homing thresholds
+       * TMC Sensorless homing thresholds
        */
       #if ENABLED(SENSORLESS_HOMING)
         if (!forReplay) {
