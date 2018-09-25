@@ -28,8 +28,6 @@
   #include <TMCStepper.h>
 #endif
 
-extern bool report_tmc_status;
-
 enum TMC_AxisEnum : char {
   TMC_X, TMC_Y, TMC_Z
   #if ENABLED(DUAL_X_CARRIAGE) || ENABLED(X_DUAL_STEPPER_DRIVERS)
