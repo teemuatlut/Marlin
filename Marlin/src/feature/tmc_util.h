@@ -66,12 +66,12 @@ enum TMC_AxisEnum : char {
 
 class TMCStorage {
   protected:
-    virtual void abstract() = 0;
+    // Only a child class has access to constructor => Don't create on its own! "Poor man's abstract class"
+    TMCStorage(const char* tmc_label) : label(tmc_label) {}
+
     uint16_t val_mA = 0;
     const char* label;
   public:
-    TMCStorage(const char* tmc_label) : label(tmc_label) {}
-
     #if ENABLED(MONITOR_DRIVER_STATUS)
       uint8_t otpw_count = 0;
     #endif
@@ -85,7 +85,6 @@ class TMCStorage {
 
 template <class TMC>
 class TMCMarlin : public TMC, public TMCStorage {
-  void abstract() override {};
   public:
     TMCMarlin(const char* tmc_label, uint16_t cs_pin, float RS) :
       TMC(cs_pin, RS),
@@ -107,7 +106,6 @@ class TMCMarlin : public TMC, public TMCStorage {
 };
 template<>
 class TMCMarlin<TMC2208Stepper> : public TMC2208Stepper, public TMCStorage {
-  void abstract() override {};
   public:
     TMCMarlin(const char* tmc_label, Stream * SerialPort, float RS, bool has_rx=true) :
       TMC2208Stepper(SerialPort, RS, has_rx=true),
