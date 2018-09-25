@@ -74,11 +74,12 @@ class TMCStorage {
   public:
     #if ENABLED(MONITOR_DRIVER_STATUS)
       uint8_t otpw_count = 0;
+      static bool report_tmc_status;
+      bool flag_otpw = false;
+      bool getOTPW() { return flag_otpw; }
+      void clear_otpw() { flag_otpw = 0; }
     #endif
 
-    bool flag_otpw = false;
-    bool getOTPW() { return flag_otpw; }
-    void clear_otpw() { flag_otpw = 0; }
     uint16_t getMilliamps() { return val_mA; }
     void printLabel() { serialprintPGM(label); }
 };
@@ -139,19 +140,21 @@ template<typename TMC>
 void tmc_set_current(TMC &st, const int mA) {
   st.rms_current(mA);
 }
-template<typename TMC>
-void tmc_report_otpw(TMC &st) {
-  st.printLabel();
-  SERIAL_ECHOPGM(" temperature prewarn triggered: ");
-  serialprintPGM(st.getOTPW() ? PSTR("true") : PSTR("false"));
-  SERIAL_EOL();
-}
-template<typename TMC>
-void tmc_clear_otpw(TMC &st) {
-  st.clear_otpw();
-  st.printLabel();
-  SERIAL_ECHOLNPGM(" prewarn flag cleared");
-}
+#if ENABLED(MONITOR_DRIVER_STATUS)
+  template<typename TMC>
+  void tmc_report_otpw(TMC &st) {
+    st.printLabel();
+    SERIAL_ECHOPGM(" temperature prewarn triggered: ");
+    serialprintPGM(st.getOTPW() ? PSTR("true") : PSTR("false"));
+    SERIAL_EOL();
+  }
+  template<typename TMC>
+  void tmc_clear_otpw(TMC &st) {
+    st.clear_otpw();
+    st.printLabel();
+    SERIAL_ECHOLNPGM(" prewarn flag cleared");
+  }
+#endif
 template<typename TMC>
 void tmc_get_pwmthrs(TMC &st, const uint16_t spmm) {
   st.printLabel();

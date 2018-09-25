@@ -36,8 +36,6 @@
   #include "../module/planner.h"
 #endif
 
-bool report_tmc_status = false;
-
 /**
  * Check for over temperature or short to ground error flags.
  * Report and log warning of overtemperature condition.
@@ -46,6 +44,8 @@ bool report_tmc_status = false;
  * and so we don't repeatedly report warning before the condition is cleared.
  */
 #if ENABLED(MONITOR_DRIVER_STATUS)
+  bool TMCStorage::report_tmc_status = false;
+
   struct TMC_driver_data {
     uint32_t drv_status;
     bool is_otpw;
@@ -144,7 +144,7 @@ bool report_tmc_status = false;
     }
     else if (st.otpw_count > 0) st.otpw_count = 0;
 
-    if (report_tmc_status) {
+    if (st.report_tmc_status) {
       const uint32_t pwm_scale = get_pwm_scale(st);
       st.printLabel();
       SERIAL_ECHOPAIR(":", pwm_scale);
@@ -205,7 +205,7 @@ bool report_tmc_status = false;
         monitor_tmc_driver(stepperE5);
       #endif
 
-      if (report_tmc_status) SERIAL_EOL();
+      if (TMCStorage::report_tmc_status) SERIAL_EOL();
     }
   }
 
@@ -500,7 +500,7 @@ bool report_tmc_status = false;
    * M122 report functions
    */
   void tmc_set_report_status(const bool status) {
-    if ((report_tmc_status = status))
+    if ((TMCStorage::report_tmc_status = status))
       SERIAL_ECHOLNPGM("axis:pwm_scale |status_response|");
   }
 
