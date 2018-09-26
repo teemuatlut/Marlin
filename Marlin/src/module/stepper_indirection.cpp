@@ -141,7 +141,6 @@
 
 #if HAS_TRINAMIC
   #if AXIS_IS_TMC(X)
-    static const char TMC_X_LABEL[] PROGMEM = MSG_A;
   #endif
   #if AXIS_IS_TMC(X2)
     static const char TMC_X2_LABEL[] PROGMEM = MSG_X2;
@@ -199,7 +198,7 @@
   #endif
   // Stepper objects of TMC2130 steppers used
   #if AXIS_DRIVER_TYPE(X, TMC2130)
-    _TMC2130_DEFINE(X);
+    TMCMarlin<TMC2130Stepper, TMC_X_LABEL> stepperX(X_CS_PIN, R_SENSE);
   #endif
   #if AXIS_DRIVER_TYPE(X2, TMC2130)
     _TMC2130_DEFINE(X2);
@@ -238,7 +237,8 @@
     _TMC2130_DEFINE(E5);
   #endif
 
-  void tmc_init(TMCMarlin<TMC2130Stepper> &st, const uint16_t mA, const uint16_t microsteps, const uint32_t thrs, const float spmm) {
+  template<const char* L>
+  void tmc_init(TMCMarlin<TMC2130Stepper, L> &st, const uint16_t mA, const uint16_t microsteps, const uint32_t thrs, const float spmm) {
     #if DISABLED(STEALTHCHOP) || DISABLED(HYBRID_THRESHOLD)
       UNUSED(thrs);
       UNUSED(spmm);
@@ -571,7 +571,7 @@ void reset_stepper_drivers() {
   #endif
 
   #if AXIS_IS_TMC(X)
-    _TMC_INIT(X, planner.axis_steps_per_mm[X_AXIS]);
+    tmc_init(stepperX, X_CURRENT, X_MICROSTEPS, X_HYBRID_THRESHOLD, planner.axis_steps_per_mm[X_AXIS]);
   #endif
   #if AXIS_IS_TMC(X2)
     _TMC_INIT(X2, planner.axis_steps_per_mm[X_AXIS]);

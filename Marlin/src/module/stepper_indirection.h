@@ -93,7 +93,7 @@ void reset_stepper_drivers();    // Called by settings.load / settings.reset
   #define X_DIR_READ (stepperX.getStatus() & STATUS_DIR)
 #else
   #if AXIS_IS_TMC(X)
-    extern TMC_CLASS(X_DRIVER_TYPE) stepperX;
+    extern TMCMarlin<TMC2130Stepper, TMC_X_LABEL> stepperX;
   #endif
   #if AXIS_DRIVER_TYPE(X, TMC26X)
     extern TMC26XStepper stepperX;

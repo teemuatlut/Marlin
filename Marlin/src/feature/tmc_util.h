@@ -28,13 +28,16 @@
   #include <TMCStepper.h>
 #endif
 
+static constexpr char TMC_X_LABEL[] PROGMEM = MSG_A;
+
+template<const char* LABEL>
 class TMCStorage {
   protected:
     // Only a child class has access to constructor => Don't create on its own! "Poor man's abstract class"
-    TMCStorage(const char* tmc_label) : label(tmc_label) {}
+    TMCStorage() {}
 
     uint16_t val_mA = 0;
-    const char* label;
+
   public:
     #if ENABLED(MONITOR_DRIVER_STATUS)
       uint8_t otpw_count = 0;
@@ -45,19 +48,17 @@ class TMCStorage {
     #endif
 
     uint16_t getMilliamps() { return val_mA; }
-    void printLabel() { serialprintPGM(label); }
+    void printLabel() { /*SERIAL(LABEL);*/ }
 };
 
-template <class TMC>
-class TMCMarlin : public TMC, public TMCStorage {
+template <class TMC, const char* LABEL>
+class TMCMarlin : public TMC, public TMCStorage<LABEL> {
   public:
-    TMCMarlin(const char* tmc_label, uint16_t cs_pin, float RS) :
-      TMC(cs_pin, RS),
-      TMCStorage(tmc_label)
+    TMCMarlin(uint16_t cs_pin, float RS) :
+      TMC(cs_pin, RS)
       {}
-    TMCMarlin(const char* tmc_label, uint16_t CS, float RS, uint16_t pinMOSI, uint16_t pinMISO, uint16_t pinSCK) :
-      TMC(CS, RS, pinMOSI, pinMISO, pinSCK),
-      TMCStorage(tmc_label)
+    TMCMarlin(uint16_t CS, float RS, uint16_t pinMOSI, uint16_t pinMISO, uint16_t pinSCK) :
+      TMC(CS, RS, pinMOSI, pinMISO, pinSCK)
       {}
     uint16_t rms_current() { return TMC::rms_current(); }
     void rms_current(uint16_t mA) {
@@ -67,27 +68,6 @@ class TMCMarlin : public TMC, public TMCStorage {
     void rms_current(uint16_t mA, float mult) {
       this->val_mA = mA;
       TMC::rms_current(mA, mult);
-    }
-};
-template<>
-class TMCMarlin<TMC2208Stepper> : public TMC2208Stepper, public TMCStorage {
-  public:
-    TMCMarlin(const char* tmc_label, Stream * SerialPort, float RS, bool has_rx=true) :
-      TMC2208Stepper(SerialPort, RS, has_rx=true),
-      TMCStorage(tmc_label)
-      {}
-    TMCMarlin(const char* tmc_label, uint16_t RX, uint16_t TX, float RS, bool has_rx=true) :
-      TMC2208Stepper(RX, TX, RS, has_rx=true),
-      TMCStorage(tmc_label)
-      {}
-    uint16_t rms_current() { return TMC2208Stepper::rms_current(); }
-    void rms_current(uint16_t mA) {
-      this->val_mA = mA;
-      TMC2208Stepper::rms_current(mA);
-    }
-    void rms_current(uint16_t mA, float mult) {
-      this->val_mA = mA;
-      TMC2208Stepper::rms_current(mA, mult);
     }
 };
 
