@@ -28,9 +28,30 @@
   #include <TMCStepper.h>
 #endif
 
-static constexpr char TMC_X_LABEL[] PROGMEM = MSG_A;
+enum TMC_AxisEnum : char {
+  TMC_X, TMC_Y, TMC_Z,
+  TMC_X2, TMC_Y2, TMC_Z2, TMC_Z3,
+  TMC_E0, TMC_E1, TMC_E2,
+  TMC_E3, TMC_E4, TMC_E5
+};
 
-template<const char* LABEL>
+static constexpr char TMC_X_LABEL[] PROGMEM = MSG_A;
+static constexpr char TMC_Y_LABEL[] PROGMEM = MSG_B;
+static constexpr char TMC_Z_LABEL[] PROGMEM = MSG_C;
+
+static constexpr char TMC_X2_LABEL[] PROGMEM = MSG_X2;
+static constexpr char TMC_Y2_LABEL[] PROGMEM = MSG_Y2;
+static constexpr char TMC_Z2_LABEL[] PROGMEM = MSG_Z2;
+static constexpr char TMC_Z3_LABEL[] PROGMEM = MSG_Z3;
+
+static constexpr char TMC_E0_LABEL[] PROGMEM = MSG_E;
+static constexpr char TMC_E1_LABEL[] PROGMEM = MSG_E1;
+static constexpr char TMC_E2_LABEL[] PROGMEM = MSG_E2;
+static constexpr char TMC_E3_LABEL[] PROGMEM = MSG_E3;
+static constexpr char TMC_E4_LABEL[] PROGMEM = MSG_E4;
+static constexpr char TMC_E5_LABEL[] PROGMEM = MSG_E5;
+
+template<TMC_AxisEnum LABEL_ID>
 class TMCStorage {
   protected:
     // Only a child class has access to constructor => Don't create on its own! "Poor man's abstract class"
@@ -48,11 +69,29 @@ class TMCStorage {
     #endif
 
     uint16_t getMilliamps() { return val_mA; }
-    void printLabel() { /*SERIAL(LABEL);*/ }
+
+    static constexpr char* getLabel() {
+      switch(LABEL_ID) {
+        case TMC_X:  return TMC_X_LABEL;
+        case TMC_Y:  return TMC_Y_LABEL;
+        case TMC_Z:  return TMC_Z_LABEL;
+        case TMC_X2: return TMC_X2_LABEL;
+        case TMC_Y2: return TMC_Y2_LABEL;
+        case TMC_Z2: return TMC_Z2_LABEL;
+        case TMC_Z3: return TMC_Z3_LABEL;
+        case TMC_E0: return TMC_E0_LABEL;
+        case TMC_E1: return TMC_E1_LABEL;
+        case TMC_E2: return TMC_E2_LABEL;
+        case TMC_E3: return TMC_E3_LABEL;
+        case TMC_E4: return TMC_E4_LABEL;
+        case TMC_E5: return TMC_E5_LABEL;
+      }
+    }
+    void printLabel() { /*SERIAL(getLabel());*/ }
 };
 
-template <class TMC, const char* LABEL>
-class TMCMarlin : public TMC, public TMCStorage<LABEL> {
+template <class TMC, TMC_AxisEnum LABEL_ID>
+class TMCMarlin : public TMC, public TMCStorage<LABEL_ID> {
   public:
     TMCMarlin(uint16_t cs_pin, float RS) :
       TMC(cs_pin, RS)

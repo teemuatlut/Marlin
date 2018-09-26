@@ -140,45 +140,6 @@
 #endif // TMC26X
 
 #if HAS_TRINAMIC
-  #if AXIS_IS_TMC(X)
-  #endif
-  #if AXIS_IS_TMC(X2)
-    static const char TMC_X2_LABEL[] PROGMEM = MSG_X2;
-  #endif
-  #if AXIS_IS_TMC(Y)
-    static const char TMC_Y_LABEL[] PROGMEM = MSG_B;
-  #endif
-  #if AXIS_IS_TMC(Y2)
-    static const char TMC_Y2_LABEL[] PROGMEM = MSG_Y2;
-  #endif
-  #if AXIS_IS_TMC(Z)
-    static const char TMC_Z_LABEL[] PROGMEM = MSG_C;
-  #endif
-  #if AXIS_IS_TMC(Z2)
-    static const char TMC_Z2_LABEL[] PROGMEM = MSG_Z2;
-  #endif
-  #if AXIS_IS_TMC(Z3)
-    static const char TMC_Z3_LABEL[] PROGMEM = MSG_Z3;
-  #endif
-  #if AXIS_IS_TMC(E0)
-    static const char TMC_E0_LABEL[] PROGMEM = MSG_E;
-  #endif
-  #if AXIS_IS_TMC(E1)
-    static const char TMC_E1_LABEL[] PROGMEM = MSG_E1;
-  #endif
-  #if AXIS_IS_TMC(E2)
-    static const char TMC_E2_LABEL[] PROGMEM = MSG_E2;
-  #endif
-  #if AXIS_IS_TMC(E3)
-    static const char TMC_E3_LABEL[] PROGMEM = MSG_E3;
-  #endif
-  #if AXIS_IS_TMC(E4)
-    static const char TMC_E4_LABEL[] PROGMEM = MSG_E4;
-  #endif
-  #if AXIS_IS_TMC(E5)
-    static const char TMC_E5_LABEL[] PROGMEM = MSG_E5;
-  #endif
-
   #define _TMC_INIT(ST, SPMM) tmc_init(stepper##ST, ST##_CURRENT, ST##_MICROSTEPS, ST##_HYBRID_THRESHOLD, SPMM)
 #endif
 
@@ -194,11 +155,12 @@
   #if ENABLED(TMC_USE_SW_SPI)
     #define _TMC2130_DEFINE(ST) TMCMarlin<TMC2130Stepper> stepper##ST(TMC_##ST##_LABEL, ST##_CS_PIN, R_SENSE, TMC_SW_MOSI, TMC_SW_MISO, TMC_SW_SCK)
   #else
-    #define _TMC2130_DEFINE(ST) TMCMarlin<TMC2130Stepper> stepper##ST(TMC_##ST##_LABEL, ST##_CS_PIN, R_SENSE)
+    #define _TMC2130_DEFINE(ST) TMCMarlin<TMC2130Stepper, TMC_##ST> stepper##ST(ST##_CS_PIN, R_SENSE)
   #endif
   // Stepper objects of TMC2130 steppers used
   #if AXIS_DRIVER_TYPE(X, TMC2130)
-    TMCMarlin<TMC2130Stepper, TMC_X_LABEL> stepperX(X_CS_PIN, R_SENSE);
+    //TMCMarlin<TMC2130Stepper, TMC_X> stepperX(X_CS_PIN, R_SENSE);
+    _TMC2130_DEFINE(X);
   #endif
   #if AXIS_DRIVER_TYPE(X2, TMC2130)
     _TMC2130_DEFINE(X2);
@@ -237,7 +199,7 @@
     _TMC2130_DEFINE(E5);
   #endif
 
-  template<const char* L>
+  template<TMC_AxisEnum L>
   void tmc_init(TMCMarlin<TMC2130Stepper, L> &st, const uint16_t mA, const uint16_t microsteps, const uint32_t thrs, const float spmm) {
     #if DISABLED(STEALTHCHOP) || DISABLED(HYBRID_THRESHOLD)
       UNUSED(thrs);
