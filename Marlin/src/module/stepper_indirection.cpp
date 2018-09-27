@@ -155,52 +155,52 @@
   #if ENABLED(TMC_USE_SW_SPI)
     #define _TMC2130_DEFINE(ST) TMCMarlin<TMC2130Stepper> stepper##ST(TMC_##ST##_LABEL, ST##_CS_PIN, R_SENSE, TMC_SW_MOSI, TMC_SW_MISO, TMC_SW_SCK)
   #else
-    #define _TMC2130_DEFINE(ST) TMCMarlin<TMC2130Stepper, TMC_##ST> stepper##ST(ST##_CS_PIN, R_SENSE)
+    #define _TMC2130_DEFINE(ST, L) TMCMarlin<TMC2130Stepper, L> stepper##ST(ST##_CS_PIN, R_SENSE)
+    #define TMC2130_DEFINE(ST) _TMC2130_DEFINE(ST, TMC_##ST##_LABEL)
   #endif
   // Stepper objects of TMC2130 steppers used
   #if AXIS_DRIVER_TYPE(X, TMC2130)
-    //TMCMarlin<TMC2130Stepper, TMC_X> stepperX(X_CS_PIN, R_SENSE);
-    _TMC2130_DEFINE(X);
+    TMC2130_DEFINE(X);
   #endif
   #if AXIS_DRIVER_TYPE(X2, TMC2130)
-    _TMC2130_DEFINE(X2);
+    TMC2130_DEFINE(X2);
   #endif
   #if AXIS_DRIVER_TYPE(Y, TMC2130)
-    _TMC2130_DEFINE(Y);
+    TMC2130_DEFINE(Y);
   #endif
   #if AXIS_DRIVER_TYPE(Y2, TMC2130)
-    _TMC2130_DEFINE(Y2);
+    TMC2130_DEFINE(Y2);
   #endif
   #if AXIS_DRIVER_TYPE(Z, TMC2130)
-    _TMC2130_DEFINE(Z);
+    TMC2130_DEFINE(Z);
   #endif
   #if AXIS_DRIVER_TYPE(Z2, TMC2130)
-    _TMC2130_DEFINE(Z2);
+    TMC2130_DEFINE(Z2);
   #endif
   #if AXIS_DRIVER_TYPE(Z3, TMC2130)
-    _TMC2130_DEFINE(Z3);
+    TMC2130_DEFINE(Z3);
   #endif
   #if AXIS_DRIVER_TYPE(E0, TMC2130)
-    _TMC2130_DEFINE(E0);
+    TMC2130_DEFINE(E0);
   #endif
   #if AXIS_DRIVER_TYPE(E1, TMC2130)
-    _TMC2130_DEFINE(E1);
+    TMC2130_DEFINE(E1);
   #endif
   #if AXIS_DRIVER_TYPE(E2, TMC2130)
-    _TMC2130_DEFINE(E2);
+    TMC2130_DEFINE(E2);
   #endif
   #if AXIS_DRIVER_TYPE(E3, TMC2130)
-    _TMC2130_DEFINE(E3);
+    TMC2130_DEFINE(E3);
   #endif
   #if AXIS_DRIVER_TYPE(E4, TMC2130)
-    _TMC2130_DEFINE(E4);
+    TMC2130_DEFINE(E4);
   #endif
   #if AXIS_DRIVER_TYPE(E5, TMC2130)
-    _TMC2130_DEFINE(E5);
+    TMC2130_DEFINE(E5);
   #endif
 
-  template<TMC_AxisEnum L>
-  void tmc_init(TMCMarlin<TMC2130Stepper, L> &st, const uint16_t mA, const uint16_t microsteps, const uint32_t thrs, const float spmm) {
+  template<char AXIS_LETTER, char DRIVER_ID>
+  void tmc_init(TMCMarlin<TMC2130Stepper, AXIS_LETTER, DRIVER_ID> &st, const uint16_t mA, const uint16_t microsteps, const uint32_t thrs, const float spmm) {
     #if DISABLED(STEALTHCHOP) || DISABLED(HYBRID_THRESHOLD)
       UNUSED(thrs);
       UNUSED(spmm);
