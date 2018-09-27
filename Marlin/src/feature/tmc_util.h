@@ -28,21 +28,21 @@
   #include <TMCStepper.h>
 #endif
 
-#define TMC_X_LABEL 'X', 0
-#define TMC_Y_LABEL 'Y', 0
-#define TMC_Z_LABEL 'Z', 0
+#define TMC_X_LABEL 'X', '0'
+#define TMC_Y_LABEL 'Y', '0'
+#define TMC_Z_LABEL 'Z', '0'
 
-#define TMC_X2_LABEL 'X', 2
-#define TMC_Y2_LABEL 'Y', 2
-#define TMC_Z2_LABEL 'Z', 2
-#define TMC_Z3_LABEL 'Z', 3
+#define TMC_X2_LABEL 'X', '2'
+#define TMC_Y2_LABEL 'Y', '2'
+#define TMC_Z2_LABEL 'Z', '2'
+#define TMC_Z3_LABEL 'Z', '3'
 
-#define TMC_E0_LABEL 'E', 0
-#define TMC_E1_LABEL 'E', 1
-#define TMC_E2_LABEL 'E', 2
-#define TMC_E3_LABEL 'E', 3
-#define TMC_E4_LABEL 'E', 4
-#define TMC_E5_LABEL 'E', 5
+#define TMC_E0_LABEL 'E', '0'
+#define TMC_E1_LABEL 'E', '1'
+#define TMC_E2_LABEL 'E', '2'
+#define TMC_E3_LABEL 'E', '3'
+#define TMC_E4_LABEL 'E', '4'
+#define TMC_E5_LABEL 'E', '5'
 
 template<char AXIS_LETTER, char DRIVER_ID>
 class TMCStorage {
@@ -64,8 +64,8 @@ class TMCStorage {
     uint16_t getMilliamps() { return val_mA; }
 
     void printLabel() {
-      //SERIAL_ECHOPGM(AXIS_LETTER);
-      //SERIAL_ECHOPGM(DRIVER_ID);
+      SERIAL_CHAR(AXIS_LETTER);
+      if (DRIVER_ID > 0) SERIAL_CHAR(DRIVER_ID);
     }
 };
 
