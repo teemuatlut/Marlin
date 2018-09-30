@@ -474,9 +474,11 @@ void GcodeSuite::process_parsed_command(
       #if ENABLED(FWRETRACT)
         case 207: M207(); break;                                  // M207: Set Retract Length, Feedrate, and Z lift
         case 208: M208(); break;                                  // M208: Set Recover (unretract) Additional Length and Feedrate
-        case 209:
-          if (MIN_AUTORETRACT <= MAX_AUTORETRACT) M209();         // M209: Turn Automatic Retract Detection on/off
-          break;
+        #if ENABLED(FWRETRACT_AUTORETRACT)
+          case 209:
+            if (MIN_AUTORETRACT <= MAX_AUTORETRACT) M209();       // M209: Turn Automatic Retract Detection on/off
+            break;
+        #endif
       #endif
 
       case 211: M211(); break;                                    // M211: Enable, Disable, and/or Report software endstops
@@ -637,8 +639,8 @@ void GcodeSuite::process_parsed_command(
         #if ENABLED(HYBRID_THRESHOLD)
           case 913: M913(); break;                                // M913: Set HYBRID_THRESHOLD speed.
         #endif
-        #if ENABLED(SENSORLESS_HOMING)
-          case 914: M914(); break;                                // M914: Set SENSORLESS_HOMING sensitivity.
+        #if USE_SENSORLESS
+          case 914: M914(); break;                                // M914: Set StallGuard sensitivity.
         #endif
         #if ENABLED(TMC_Z_CALIBRATION)
           case 915: M915(); break;                                // M915: TMC Z axis calibration.
