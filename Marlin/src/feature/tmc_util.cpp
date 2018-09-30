@@ -558,9 +558,9 @@
 
 #endif // TMC_DEBUG
 
-#if ENABLED(SENSORLESS_HOMING)
+#if USE_SENSORLESS
 
-  void tmc_sensorless_homing(TMC2130Stepper &st, const bool enable/*=true*/) {
+  void tmc_stallguard(TMC2130Stepper &st, const bool enable/*=true*/) {
     st.TCOOLTHRS(enable ? 0xFFFFF : 0);
     #if ENABLED(STEALTHCHOP)
       st.en_pwm_mode(!enable);
@@ -568,7 +568,7 @@
     st.diag1_stall(enable ? 1 : 0);
   }
 
-#endif // SENSORLESS_HOMING
+#endif // USE_SENSORLESS
 
 #if HAS_DRIVER(TMC2130)
   #define IS_TMC_SPI(ST) AXIS_DRIVER_TYPE(ST, TMC2130)

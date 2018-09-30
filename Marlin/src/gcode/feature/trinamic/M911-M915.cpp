@@ -269,9 +269,9 @@
 #endif // HYBRID_THRESHOLD
 
 /**
- * M914: Set SENSORLESS_HOMING sensitivity.
+ * M914: Set StallGuard sensitivity.
  */
-#if ENABLED(SENSORLESS_HOMING)
+#if USE_SENSORLESS
   void GcodeSuite::M914() {
     #define TMC_SAY_SGT(Q) tmc_get_sgt(stepper##Q)
     #define TMC_SET_SGT(Q) tmc_set_sgt(stepper##Q, value)
@@ -348,7 +348,7 @@
       #endif
     }
   }
-#endif // SENSORLESS_HOMING
+#endif // USE_SENSORLESS
 
 /**
  * TMC Z axis calibration routine
