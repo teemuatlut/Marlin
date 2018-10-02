@@ -270,7 +270,7 @@ void Endstops::enable(const bool onoff) {
   #endif
 }
 
-// Disable / Enable endstops based on ENSTOPS_ONLY_FOR_HOMING and global enable
+// Disable / Enable endstops based on ENDSTOPS_ONLY_FOR_HOMING and global enable
 void Endstops::not_homing() {
   enabled = enabled_globally;
 
@@ -506,127 +506,77 @@ void Endstops::update() {
    */
   #if HAS_X_MIN
     #if ENABLED(X_DUAL_ENDSTOPS)
-      UPDATE_ENDSTOP_BIT(X, MIN);
+      SET_BIT_TO(live_state, X_MIN, READ(X_MIN_PIN) != X_MIN_ENDSTOP_INVERTING);
       #if HAS_X2_MIN
-        UPDATE_ENDSTOP_BIT(X2, MIN);
+        SET_BIT_TO(live_state, X2_MIN, READ(X2_MIN_PIN) != X2_MIN_ENDSTOP_INVERTING);
       #else
-        COPY_LIVE_STATE(X_MIN, X2_MIN);
+        SET_BIT_TO(live_state, X2_MIN, TEST(live_state, X_MIN))
       #endif
     #else
-      UPDATE_ENDSTOP_BIT(X, MIN);
-    #endif
-  #endif
-
-  #if HAS_X_MAX
-    #if ENABLED(X_DUAL_ENDSTOPS)
-      UPDATE_ENDSTOP_BIT(X, MAX);
-      #if HAS_X2_MAX
-        UPDATE_ENDSTOP_BIT(X2, MAX);
-      #else
-        COPY_LIVE_STATE(X_MAX, X2_MAX);
-      #endif
-    #else
-      UPDATE_ENDSTOP_BIT(X, MAX);
+      SET_BIT_TO(live_state, X_MIN, READ(X_MIN_PIN) != X_MIN_ENDSTOP_INVERTING);
     #endif
   #endif
 
   #if HAS_Y_MIN
     #if ENABLED(Y_DUAL_ENDSTOPS)
-      UPDATE_ENDSTOP_BIT(Y, MIN);
+      SET_BIT_TO(live_state, Y_MIN, READ(Y_MIN_PIN) != Y_MIN_ENDSTOP_INVERTING);
       #if HAS_Y2_MIN
-        UPDATE_ENDSTOP_BIT(Y2, MIN);
+        SET_BIT_TO(live_state, Y2_MIN, READ(Y2_MIN_PIN) != Y2_MIN_ENDSTOP_INVERTING);
       #else
-        COPY_LIVE_STATE(Y_MIN, Y2_MIN);
+        SET_BIT_TO(live_state, Y2_MIN, TEST(live_state, Y_MIN))
       #endif
     #else
-      UPDATE_ENDSTOP_BIT(Y, MIN);
-    #endif
-  #endif
-
-  #if HAS_Y_MAX
-    #if ENABLED(Y_DUAL_ENDSTOPS)
-      UPDATE_ENDSTOP_BIT(Y, MAX);
-      #if HAS_Y2_MAX
-        UPDATE_ENDSTOP_BIT(Y2, MAX);
-      #else
-        COPY_LIVE_STATE(Y_MAX, Y2_MAX);
-      #endif
-    #else
-      UPDATE_ENDSTOP_BIT(Y, MAX);
+      SET_BIT_TO(live_state, Y_MIN, READ(Y_MIN_PIN) != Y_MIN_ENDSTOP_INVERTING);
     #endif
   #endif
 
   #if HAS_Z_MIN
     #if Z_MULTI_ENDSTOPS
-      UPDATE_ENDSTOP_BIT(Z, MIN);
+      SET_BIT_TO(live_state, Z_MIN, READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING);
       #if HAS_Z2_MIN
-        UPDATE_ENDSTOP_BIT(Z2, MIN);
+        SET_BIT_TO(live_state, Z2_MIN, READ(Z2_MIN_PIN) != Z2_MIN_ENDSTOP_INVERTING);
       #else
-        COPY_LIVE_STATE(Z_MIN, Z2_MIN);
+        SET_BIT_TO(live_state, Z2_MIN, TEST(live_state, Z_MIN))
       #endif
       #if ENABLED(Z_TRIPLE_ENDSTOPS)
         #if HAS_Z3_MIN
-          UPDATE_ENDSTOP_BIT(Z3, MIN);
+          SET_BIT_TO(live_state, Z3_MIN, READ(Z3_MIN_PIN) != Z3_MIN_ENDSTOP_INVERTING);
         #else
-          COPY_LIVE_STATE(Z_MIN, Z3_MIN);
+          SET_BIT_TO(live_state, Z3_MIN, TEST(live_state, Z_MIN))
         #endif
       #endif
     #elif ENABLED(Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN)
-      UPDATE_ENDSTOP_BIT(Z, MIN);
+      SET_BIT_TO(live_state, Z_MIN, READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING);
     #elif Z_HOME_DIR < 0
-      UPDATE_ENDSTOP_BIT(Z, MIN);
+      SET_BIT_TO(live_state, Z_MIN, READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING);
     #endif
   #endif
 
   // When closing the gap check the enabled probe
   #if ENABLED(Z_MIN_PROBE_ENDSTOP)
-    UPDATE_ENDSTOP_BIT(Z, MIN_PROBE);
+    SET_BIT_TO(live_state, Z_MINMAXMIN_PROBE READ(Z_MINMAXMIN_PROBE_PIN!=) Z_MIN_PROBE_ENDSTOP_INVERTING);
   #endif
 
   #if HAS_Z_MAX
     // Check both Z dual endstops
     #if Z_MULTI_ENDSTOPS
-      UPDATE_ENDSTOP_BIT(Z, MAX);
+      SET_BIT_TO(live_state, Z_MAX, READ(Z_MAX_PIN) != Z_MAX_ENDSTOP_INVERTING);
       #if HAS_Z2_MAX
-        UPDATE_ENDSTOP_BIT(Z2, MAX);
+        SET_BIT_TO(live_state, Z2_MAX, READ(Z2_MAX_PIN) != Z2_MAX_ENDSTOP_INVERTING);
       #else
-        COPY_LIVE_STATE(Z_MAX, Z2_MAX);
+        SET_BIT_TO(live_state, Z2_MAX, TEST(live_state, Z_MAX))
       #endif
       #if ENABLED(Z_TRIPLE_ENDSTOPS)
         #if HAS_Z3_MAX
-          UPDATE_ENDSTOP_BIT(Z3, MAX);
+          SET_BIT_TO(live_state, Z3_MAX, READ(Z3_MAX_PIN) != Z3_MAX_ENDSTOP_INVERTING);
         #else
-          COPY_LIVE_STATE(Z_MAX, Z3_MAX);
+          SET_BIT_TO(live_state, Z3_MAX, TEST(live_state, Z_MAX))
         #endif
       #endif
     #elif DISABLED(Z_MIN_PROBE_ENDSTOP) || Z_MAX_PIN != Z_MIN_PROBE_PIN
       // If this pin isn't the bed probe it's the Z endstop
-      UPDATE_ENDSTOP_BIT(Z, MAX);
+      SET_BIT_TO(live_state, Z_MAX, READ(Z_MAX_PIN) != Z_MAX_ENDSTOP_INVERTING);
     #endif
-  #endif
-
-  #if ENDSTOP_NOISE_THRESHOLD
-
-    /**
-     * Filtering out noise on endstops requires a delayed decision. Let's assume, due to noise,
-     * that 50% of endstop signal samples are good and 50% are bad (assuming normal distribution
-     * of random noise). Then the first sample has a 50% chance to be good or bad. The 2nd sample
-     * also has a 50% chance to be good or bad. The chances of 2 samples both being bad becomes
-     * 50% of 50%, or 25%. That was the previous implementation of Marlin endstop handling. It
-     * reduces chances of bad readings in half, at the cost of 1 extra sample period, but chances
-     * still exist. The only way to reduce them further is to increase the number of samples.
-     * To reduce the chance to 1% (1/128th) requires 7 samples (adding 7ms of delay).
-     */
-    static esbits_t old_live_state;
-    if (old_live_state != live_state) {
-      endstop_poll_count = ENDSTOP_NOISE_THRESHOLD;
-      old_live_state = live_state;
-    }
-    else if (endstop_poll_count && !--endstop_poll_count)
-      validated_live_state = live_state;
-
-    if (!abort_enabled()) return;
-
   #endif
 
   // Test the current status of an endstop
@@ -683,7 +633,10 @@ void Endstops::update() {
         #if ENABLED(X_DUAL_ENDSTOPS)
           PROCESS_DUAL_ENDSTOP(X, X2, MIN);
         #else
-          if (X_MIN_TEST) PROCESS_ENDSTOP(X, MIN);
+          if (TEST(state(), X_MIN)) {
+            SBI(hit_state, X_MIN);
+            planner.endstop_triggered(X_AXIS);
+          }
         #endif
       #endif
     }
