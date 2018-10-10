@@ -82,8 +82,8 @@
   #define X_MAX_PIN         2
 #endif
 #define Y_MIN_PIN          14
-#define Y_MAX_PIN          15
-#define Z_MIN_PIN          18
+#define Y_MAX_PIN           2
+#define Z_MIN_PIN          57
 #define Z_MAX_PIN          19
 
 //
@@ -100,28 +100,28 @@
 #define X_DIR_PIN          55
 #define X_ENABLE_PIN       38
 #ifndef X_CS_PIN
-  #define X_CS_PIN         53
+  #define X_CS_PIN         42
 #endif
 
 #define Y_STEP_PIN         60
 #define Y_DIR_PIN          61
 #define Y_ENABLE_PIN       56
 #ifndef Y_CS_PIN
-  #define Y_CS_PIN         49
+  #define Y_CS_PIN         65
 #endif
 
 #define Z_STEP_PIN         46
 #define Z_DIR_PIN          48
 #define Z_ENABLE_PIN       62
 #ifndef Z_CS_PIN
-  #define Z_CS_PIN         40
+  #define Z_CS_PIN         -1
 #endif
 
 #define E0_STEP_PIN        26
 #define E0_DIR_PIN         28
 #define E0_ENABLE_PIN      24
 #ifndef E0_CS_PIN
-  #define E0_CS_PIN        42
+  #define E0_CS_PIN        40
 #endif
 
 #define E1_STEP_PIN        36
@@ -157,8 +157,8 @@
   //#define X2_HARDWARE_SERIAL Serial1
   //#define Y_HARDWARE_SERIAL  Serial1
   //#define Y2_HARDWARE_SERIAL Serial1
-  //#define Z_HARDWARE_SERIAL  Serial1
-  //#define Z2_HARDWARE_SERIAL Serial1
+  #define Z_HARDWARE_SERIAL  Serial3
+  #define Z2_HARDWARE_SERIAL Serial1
   //#define E0_HARDWARE_SERIAL Serial1
   //#define E1_HARDWARE_SERIAL Serial1
   //#define E2_HARDWARE_SERIAL Serial1
@@ -246,7 +246,7 @@
 #define HEATER_0_PIN       RAMPS_D10_PIN
 
 #if ENABLED(IS_RAMPS_EFB)                      // Hotend, Fan, Bed
-  #define HEATER_BED_PIN   RAMPS_D8_PIN
+  #define HEATER_BED_PIN   63
 #elif ENABLED(IS_RAMPS_EEF)                    // Hotend, Hotend, Fan
   #define HEATER_1_PIN     RAMPS_D9_PIN
 #elif ENABLED(IS_RAMPS_EEB)                    // Hotend, Hotend, Bed
@@ -280,6 +280,7 @@
 //
 #define SDSS               53
 #define LED_PIN            13
+#define SOL1_PIN       64
 
 #ifndef FILWIDTH_PIN
   #define FILWIDTH_PIN      5   // Analog Input on AUX2
