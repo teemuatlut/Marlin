@@ -32,6 +32,8 @@
 #include "../libs/duration_t.h"
 #include "../gcode/gcode.h"
 
+#include "../module/endstops.h"
+
 #if ENABLED(TMC_DEBUG)
   #include "../module/planner.h"
   static bool report_tmc_status; // = false;
@@ -631,11 +633,11 @@
 #if USE_SENSORLESS
 
   void tmc_stallguard(TMC2130Stepper &st, const bool enable/*=true*/) {
-    st.TCOOLTHRS(enable ? 0xFFFFF : 0);
     #if ENABLED(STEALTHCHOP)
       st.en_pwm_mode(!enable);
     #endif
     st.diag1_stall(enable ? 1 : 0);
+    endstops.tmc_spi_homing = enable ? true : false;
   }
   void tmc_sensorless_homing(TMC2660Stepper &st, const bool enable) {
     // TODO

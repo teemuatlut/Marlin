@@ -54,6 +54,8 @@ Endstops::esbits_t Endstops::live_state = 0;
   volatile bool Endstops::z_probe_enabled = false;
 #endif
 
+bool Endstops::tmc_spi_homing = false;
+
 // Initialized by settings.load()
 #if ENABLED(X_DUAL_ENDSTOPS)
   float Endstops::x2_endstop_adj;

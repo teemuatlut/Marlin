@@ -1316,6 +1316,13 @@
   #endif
 
   /**
+   * Beta feature! TMC2130 only
+   * Poll the driver through SPI to determine load when homing.
+   * Negates the need for a wire from DIAG1 to an endstop pin.
+   */
+  #define SPI_ENDSTOPS
+
+  /**
    * Enable M122 debugging command for TMC stepper drivers.
    * M122 S0/1 will enable continous reporting.
    */

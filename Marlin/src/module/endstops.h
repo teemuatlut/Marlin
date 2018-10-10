@@ -170,6 +170,8 @@ class Endstops {
       static void monitor();
       static void run_monitor();
     #endif
+
+    static bool tmc_spi_homing;
 };
 
 extern Endstops endstops;
