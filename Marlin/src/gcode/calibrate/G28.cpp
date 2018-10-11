@@ -434,6 +434,9 @@ void GcodeSuite::G28(const bool always_home_all) {
   #if ENABLED(DEBUG_LEVELING_FEATURE)
     if (DEBUGGING(LEVELING)) SERIAL_ECHOLNPGM("<<< G28");
   #endif
-  CBI(endstops.live_state, X_MIN);
-  digitalWrite(2, HIGH);
+
+  #if ENABLED(SPI_ENDSTOPS)
+    endstops.clear_live_state();
+    digitalWrite(2, HIGH);
+  #endif
 }

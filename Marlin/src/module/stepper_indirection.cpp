@@ -221,6 +221,8 @@
     st.iholddelay(10);
     st.TPOWERDOWN(128); // ~2s until driver lowers to hold current
 
+    st.TCOOLTHRS(0xFFFFF);
+
     #if ENABLED(STEALTHCHOP)
       st.en_pwm_mode(true);
 

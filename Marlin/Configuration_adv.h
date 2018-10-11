@@ -1313,14 +1313,15 @@
     #define X_STALL_SENSITIVITY  10
     #define Y_STALL_SENSITIVITY  8
     //#define Z_STALL_SENSITIVITY  8
-  #endif
 
-  /**
-   * Beta feature! TMC2130 only
-   * Poll the driver through SPI to determine load when homing.
-   * Negates the need for a wire from DIAG1 to an endstop pin.
-   */
-  #define SPI_ENDSTOPS
+    /**
+     * Beta feature! TMC2130 only
+     * Poll the driver through SPI to determine load when homing.
+     * Negates the need for a wire from DIAG1 to an endstop pin.
+     */
+    #define SPI_ENDSTOPS
+
+  #endif
 
   /**
    * Enable M122 debugging command for TMC stepper drivers.

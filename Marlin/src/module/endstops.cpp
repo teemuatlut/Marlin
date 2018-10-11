@@ -54,8 +54,6 @@ Endstops::esbits_t Endstops::live_state = 0;
   volatile bool Endstops::z_probe_enabled = false;
 #endif
 
-bool Endstops::tmc_spi_homing = false;
-
 // Initialized by settings.load()
 #if ENABLED(X_DUAL_ENDSTOPS)
   float Endstops::x2_endstop_adj;
@@ -68,6 +66,10 @@ bool Endstops::tmc_spi_homing = false;
 #endif
 #if ENABLED(Z_TRIPLE_ENDSTOPS)
   float Endstops::z3_endstop_adj;
+#endif
+
+#if ENABLED(SPI_ENDSTOPS)
+  bool Endstops::tmc_spi_homing = false;
 #endif
 
 /**
@@ -506,7 +508,7 @@ void Endstops::update() {
   /**
    * Check and update endstops
    */
-  #if HAS_X_MIN
+  #if (HAS_X_MIN && !X_SPI_SENSORLESS)
     #if ENABLED(X_DUAL_ENDSTOPS)
       SET_BIT_TO(live_state, X_MIN, READ(X_MIN_PIN) != X_MIN_ENDSTOP_INVERTING);
       #if HAS_X2_MIN
@@ -519,7 +521,7 @@ void Endstops::update() {
     #endif
   #endif
 
-  #if HAS_Y_MIN
+  #if (HAS_Y_MIN && !Y_SPI_SENSORLESS)
     #if ENABLED(Y_DUAL_ENDSTOPS)
       SET_BIT_TO(live_state, Y_MIN, READ(Y_MIN_PIN) != Y_MIN_ENDSTOP_INVERTING);
       #if HAS_Y2_MIN
@@ -532,7 +534,7 @@ void Endstops::update() {
     #endif
   #endif
 
-  #if HAS_Z_MIN
+  #if (HAS_Z_MIN && !Z_SPI_SENSORLESS)
     #if Z_MULTI_ENDSTOPS
       SET_BIT_TO(live_state, Z_MIN, READ(Z_MIN_PIN) != Z_MIN_ENDSTOP_INVERTING);
       #if HAS_Z2_MIN
@@ -559,7 +561,7 @@ void Endstops::update() {
     SET_BIT_TO(live_state, Z_MINMAXMIN_PROBE READ(Z_MINMAXMIN_PROBE_PIN!=) Z_MIN_PROBE_ENDSTOP_INVERTING);
   #endif
 
-  #if HAS_Z_MAX
+  #if (HAS_Z_MAX && !Z_SPI_SENSORLESS)
     // Check both Z dual endstops
     #if Z_MULTI_ENDSTOPS
       SET_BIT_TO(live_state, Z_MAX, READ(Z_MAX_PIN) != Z_MAX_ENDSTOP_INVERTING);

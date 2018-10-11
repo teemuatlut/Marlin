@@ -70,7 +70,7 @@ class Endstops {
       typedef uint8_t esbits_t;
     #endif
 
-  private:
+  //private:
     static bool enabled, enabled_globally;
     static esbits_t live_state;
     static volatile uint8_t hit_state;      // Use X_MIN, Y_MIN, Z_MIN and Z_MIN_PROBE as BIT index
@@ -171,7 +171,12 @@ class Endstops {
       static void run_monitor();
     #endif
 
-    static bool tmc_spi_homing;
+    #if ENABLED(SPI_ENDSTOPS)
+      static void set_live_state_bit(EndstopEnum axis) { SBI(endstops.live_state, axis); }
+      static void clear_live_state_bit(EndstopEnum axis) { CBI(endstops.live_state, axis); }
+      static void clear_live_state() { live_state = 0; }
+      static struct { bool x, y, z } tmc_spi_homing;
+    #endif
 };
 
 extern Endstops endstops;

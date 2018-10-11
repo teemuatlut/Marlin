@@ -174,6 +174,9 @@ void monitor_tmc_driver();
 #if USE_SENSORLESS
   void tmc_stallguard(TMC2130Stepper &st, const bool enable=true);
   void tmc_stallguard(TMC2660Stepper &st, const bool enable=true);
+  #if ENABLED(SPI_ENDSTOPS)
+    void test_stall_status();
+  #endif
 #endif
 
 #if TMC_HAS_SPI

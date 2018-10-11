@@ -1009,6 +1009,14 @@ inline float get_homing_bump_feedrate(const AxisEnum axis) {
           break;
       #endif
     }
+
+    #if ENABLED(SPI_ENDSTOPS)
+      switch (axis) {
+        case X_AXIS: tmc_spi_homing.x = enable; break;
+        case Y_AXIS: tmc_spi_homing.y = enable; break;
+        case Z_AXIS: tmc_spi_homing.z = enable; break;
+      }
+    #endif
   }
 
 #endif // SENSORLESS_HOMING
@@ -1088,6 +1096,7 @@ void do_homing_move(const AxisEnum axis, const float distance, const float fr_mm
     );
   #endif
 
+  delay(100);
   planner.synchronize();
 
   if (is_home_dir) {

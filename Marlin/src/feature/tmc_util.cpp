@@ -637,10 +637,51 @@
       st.en_pwm_mode(!enable);
     #endif
     st.diag1_stall(enable ? 1 : 0);
-    endstops.tmc_spi_homing = enable ? true : false;
   }
   void tmc_sensorless_homing(TMC2660Stepper &st, const bool enable) {
     // TODO
+  }
+
+  bool test_axis_stall_status(const AxisEnum axis) {
+    uint16_t sg_result = 0;
+
+    SPI.beginTransaction(SPISettings(16000000/8, MSBFIRST, SPI_MODE3));
+    // Read DRV_STATUS
+    SPI.transfer(TMC2130_n::DRV_STATUS_t::address);
+    SPI.transfer(0);
+    SPI.transfer(0);
+    // We only care about the last 10 bits
+    sg_result = SPI.transfer(0);
+    sg_result <<= 8;
+    sg_result |= SPI.transfer(0);
+    sg_result &= 0x3FF;
+    SPI.endTransaction();
+
+    sg_result ? WRITE(2, LOW) : WRITE(2, HIGH);
+
+    return sg_result;
+  }
+
+  void test_stall_status() {
+    WRITE(65, HIGH);
+
+    if (endstops.tmc_spi_homing.x) {
+      WRITE(X_CS_PIN, LOW);
+      test_axis_stall_status(X_AXIS) ? endstops.clear_live_state_bit(X_AXIS) : endstops.set_live_state_bit(X_AXIS);
+      WRITE(X_CS_PIN, HIGH);
+    }
+    else if (endstops.tmc_spi_homing.y) {
+      WRITE(Y_CS_PIN, LOW);
+      test_axis_stall_status(Y_AXIS) ? endstops.clear_live_state_bit(Y_AXIS) : endstops.set_live_state_bit(Y_AXIS);
+      WRITE(Y_CS_PIN, HIGH);
+    }
+    else if (endstops.tmc_spi_homing.z) {
+      WRITE(Z_CS_PIN, LOW);
+      test_axis_stall_status(Z_AXIS) ? endstops.clear_live_state_bit(Z_AXIS) : endstops.set_live_state_bit(Z_AXIS);
+      WRITE(Z_CS_PIN, HIGH);
+    }
+
+    WRITE(65, LOW);
   }
 
 #endif // USE_SENSORLESS

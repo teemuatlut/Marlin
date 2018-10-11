@@ -597,37 +597,10 @@ void idle(
     Sd2Card::idle();
   #endif
 
-  if (endstops.tmc_spi_homing == true) {
-    WRITE(65, HIGH);
-
-    uint16_t sg_result = 0;
-
-    SPI.beginTransaction(SPISettings(16000000/8, MSBFIRST, SPI_MODE3));
-    WRITE(X_CS_PIN, LOW);
-
-    // Read DRV_STATUS
-    SPI.transfer(TMC2130_n::DRV_STATUS_t::address);
-    SPI.transfer(0);
-    SPI.transfer(0);
-    // We only care about the last 10 bits
-    sg_result = SPI.transfer(0);
-    sg_result <<= 8;
-    sg_result |= SPI.transfer(0);
-    sg_result &= 0x3FF;
-
-    WRITE(X_CS_PIN, HIGH);
-
-    if (!sg_result){
-      SBI(endstops.live_state, X_MIN);
-      WRITE(2, HIGH);
-    }
-    else {
-      CBI(endstops.live_state, X_MIN);
-      WRITE(2, LOW);
-    }
-    WRITE(65, LOW);
-  }
-
+  #if ENABLED(SPI_ENDSTOPS)
+    if (endstops.tmc_spi_homing.x || endstops.tmc_spi_homing.y || endstops.tmc_spi_homing.z)
+      test_stall_status();
+  #endif
 }
 
 /**
