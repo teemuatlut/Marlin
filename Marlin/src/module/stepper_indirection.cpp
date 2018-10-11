@@ -212,8 +212,8 @@
     chopconf.tbl = 1;
     chopconf.toff = 3;
     chopconf.intpol = INTERPOLATE;
-    chopconf.hstrt = 2;
-    chopconf.hend = 5;
+    chopconf.hstrt = 0;
+    chopconf.hend = 2;
     st.CHOPCONF(chopconf.sr);
 
     st.rms_current(mA, HOLD_MULTIPLIER);

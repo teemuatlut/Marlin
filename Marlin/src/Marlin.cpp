@@ -972,6 +972,11 @@ void setup() {
   #if ENABLED(SDSUPPORT) && DISABLED(ULTRA_LCD)
     card.beginautostart();
   #endif
+
+  pinMode(2, OUTPUT);
+  digitalWrite(2, LOW);
+  pinMode(65, OUTPUT);
+  digitalWrite(65, LOW);
 }
 
 /**
