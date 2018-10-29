@@ -228,6 +228,83 @@
   #undef E5_CS_PIN
 #endif
 
+#if !PIN_EXISTS(X_SERIAL_TX)
+  #undef X_SERIAL_TX_PIN
+#endif
+#if !PIN_EXISTS(X_SERIAL_RX)
+  #undef X_SERIAL_RX_PIN
+#endif
+
+#if !PIN_EXISTS(X_SERIAL_TX)
+  #undef X_SERIAL_TX_PIN
+#endif
+#if !PIN_EXISTS(X_SERIAL_RX)
+  #undef X_SERIAL_RX_PIN
+#endif
+#if !PIN_EXISTS(X2_SERIAL_TX)
+  #undef X2_SERIAL_TX_PIN
+#endif
+#if !PIN_EXISTS(X2_SERIAL_RX)
+  #undef X2_SERIAL_RX_PIN
+#endif
+
+#if !PIN_EXISTS(Y_SERIAL_TX)
+  #undef Y_SERIAL_TX_PIN
+#endif
+#if !PIN_EXISTS(Y_SERIAL_RX)
+  #undef Y_SERIAL_RX_PIN
+#endif
+#if !PIN_EXISTS(Y2_SERIAL_TX)
+  #undef Y2_SERIAL_TX_PIN
+#endif
+#if !PIN_EXISTS(Y2_SERIAL_RX)
+  #undef Y2_SERIAL_RX_PIN
+#endif
+
+#if !PIN_EXISTS(Z_SERIAL_TX)
+  #undef Z_SERIAL_TX_PIN
+#endif
+#if !PIN_EXISTS(Z_SERIAL_RX)
+  #undef Z_SERIAL_RX_PIN
+#endif
+#if !PIN_EXISTS(Z2_SERIAL_TX)
+  #undef Z2_SERIAL_TX_PIN
+#endif
+#if !PIN_EXISTS(Z2_SERIAL_RX)
+  #undef Z2_SERIAL_RX_PIN
+#endif
+
+#if !PIN_EXISTS(E0_SERIAL_TX)
+  #undef E0_SERIAL_TX_PIN
+#endif
+#if !PIN_EXISTS(E0_SERIAL_RX)
+  #undef E0_SERIAL_RX_PIN
+#endif
+#if !PIN_EXISTS(E1_SERIAL_TX)
+  #undef E1_SERIAL_TX_PIN
+#endif
+#if !PIN_EXISTS(E1_SERIAL_RX)
+  #undef E1_SERIAL_RX_PIN
+#endif
+#if !PIN_EXISTS(E2_SERIAL_TX)
+  #undef E2_SERIAL_TX_PIN
+#endif
+#if !PIN_EXISTS(E2_SERIAL_RX)
+  #undef E2_SERIAL_RX_PIN
+#endif
+#if !PIN_EXISTS(E3_SERIAL_TX)
+  #undef E3_SERIAL_TX_PIN
+#endif
+#if !PIN_EXISTS(E3_SERIAL_RX)
+  #undef E3_SERIAL_RX_PIN
+#endif
+#if !PIN_EXISTS(E4_SERIAL_TX)
+  #undef E4_SERIAL_TX_PIN
+#endif
+#if !PIN_EXISTS(E4_SERIAL_RX)
+  #undef E4_SERIAL_RX_PIN
+#endif
+
 #if !PIN_EXISTS(FAN)
   #undef FAN_PIN
 #endif

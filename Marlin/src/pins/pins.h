@@ -1099,7 +1099,7 @@
   #if AXIS_HAS_SPI(Z2) && !defined(Z2_CS_PIN)
     #define Z2_CS_PIN     _EPIN(Z2_E_INDEX, CS)
   #endif
-  #if AXIS_HAS_UART(Z2)
+  #if 0 //AXIS_HAS_UART(Z2)
     #ifndef Z2_SERIAL_TX_PIN
       #define Z2_SERIAL_TX_PIN _EPIN(Z2_E_INDEX, SERIAL_TX)
     #endif
