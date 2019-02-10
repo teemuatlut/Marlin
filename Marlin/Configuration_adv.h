@@ -1748,6 +1748,9 @@
    * Beta feature! TMC2130 only
    * Poll the driver through SPI to determine load when homing.
    * Negates the need for a wire from DIAG1 to an endstop pin.
+   *
+   * IMPROVE_HOMING_RELIABILITY tunes your acceleration and jerk profile when homing
+   * and adds a guard period for endstop triggering.
    */
   //#define SENSORLESS_HOMING // TMC2130 only
 
@@ -1765,6 +1768,7 @@
     //#define Z_STALL_SENSITIVITY  8
 
     //#define SPI_ENDSTOPS
+    //#define IMPROVE_HOMING_RELIABILITY
   #endif
 
   /**

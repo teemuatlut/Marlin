@@ -237,6 +237,23 @@ void GcodeSuite::G28(const bool always_home_all) {
     workspace_plane = PLANE_XY;
   #endif
 
+  #if ENABLED(IMPROVE_HOMING_RELIABILITY)
+    motion_params_t saved_planner{0};
+    saved_planner.acceleration.x = planner.settings.max_acceleration_mm_per_s2[X_AXIS];
+    saved_planner.acceleration.y = planner.settings.max_acceleration_mm_per_s2[Y_AXIS];
+    planner.settings.max_acceleration_mm_per_s2[X_AXIS] = 100;
+    planner.settings.max_acceleration_mm_per_s2[Y_AXIS] = 100;
+    #if HAS_CLASSIC_JERK
+      saved_planner.jerk.x = planner.max_jerk[X_AXIS];
+      saved_planner.jerk.y = planner.max_jerk[Y_AXIS];
+      planner.max_jerk[X_AXIS] = 0;
+      planner.max_jerk[Y_AXIS] = 0;
+    #endif
+
+    // steps per sq second need to be updated to agree with the units per sq second (as they are what is used in the planner)
+    planner.reset_acceleration_rates();
+  #endif
+
   // Always home with tool 0 active
   #if HOTENDS > 1
     #if DISABLED(DELTA) || ENABLED(DELTA_HOME_TO_SAFE_ZONE)
@@ -434,6 +451,18 @@ void GcodeSuite::G28(const bool always_home_all) {
       #define NO_FETCH true
     #endif
     tool_change(old_tool_index, 0, NO_FETCH);
+  #endif
+
+  #if ENABLED(IMPROVE_HOMING_RELIABILITY)
+    planner.settings.max_acceleration_mm_per_s2[X_AXIS] = saved_planner.acceleration.x;
+    planner.settings.max_acceleration_mm_per_s2[Y_AXIS] = saved_planner.acceleration.y;
+    #if HAS_CLASSIC_JERK
+      planner.max_jerk[X_AXIS] = saved_planner.jerk.x;
+      planner.max_jerk[Y_AXIS] = saved_planner.jerk.y;
+    #endif
+
+    // steps per sq second need to be updated to agree with the units per sq second (as they are what is used in the planner)
+    planner.reset_acceleration_rates();
   #endif
 
   ui.refresh();

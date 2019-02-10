@@ -79,6 +79,9 @@ Endstops::esbits_t Endstops::live_state = 0;
 #if ENABLED(SPI_ENDSTOPS)
   Endstops::tmc_spi_homing_t Endstops::tmc_spi_homing = { false, false, false };
 #endif
+#if ENABLED(IMPROVE_HOMING_RELIABILITY)
+  millis_t sg_guard_period = 0;
+#endif
 
 /**
  * Class and Instance Methods
@@ -487,6 +490,10 @@ void Endstops::update() {
     if (!abort_enabled()) return;
   #endif
 
+  #if ENABLED(IMPROVE_HOMING_RELIABILITY) // With SENSORLESS_HOMING or SENSORLESS_PROBING
+    millis_t ms = millis();
+  #endif
+
   #define UPDATE_ENDSTOP_BIT(AXIS, MINMAX) SET_BIT_TO(live_state, _ENDSTOP(AXIS, MINMAX), (READ(_ENDSTOP_PIN(AXIS, MINMAX)) != _ENDSTOP_INVERTING(AXIS, MINMAX)))
   #define COPY_LIVE_STATE(SRC_BIT, DST_BIT) SET_BIT_TO(live_state, DST_BIT, TEST(live_state, SRC_BIT))
 
@@ -537,9 +544,11 @@ void Endstops::update() {
       UPDATE_ENDSTOP_BIT(X, MIN);
     #endif
   #elif X_SPI_SENSORLESS && X_HOME_DIR == -1
-    if (endstops.tmc_spi_homing.x) {
-      SET_BIT_TO(live_state, X_MIN, stepperX.test_stall_status());
-    }
+    if (endstops.tmc_spi_homing.x
+      #if ENABLED(IMPROVE_HOMING_RELIABILITY)
+        && ELAPSED(ms, sg_guard_period)
+      #endif
+    ) SET_BIT_TO(live_state, X_MIN, stepperX.test_stall_status());
   #endif
 
   #if HAS_X_MAX
@@ -554,9 +563,11 @@ void Endstops::update() {
       UPDATE_ENDSTOP_BIT(X, MAX);
     #endif
   #elif X_SPI_SENSORLESS && X_HOME_DIR == 1
-    if (endstops.tmc_spi_homing.x) {
-      SET_BIT_TO(live_state, X_MAX, stepperX.test_stall_status());
-    }
+    if (endstops.tmc_spi_homing.x
+      #if ENABLED(IMPROVE_HOMING_RELIABILITY)
+        && ELAPSED(ms, sg_guard_period)
+      #endif
+    ) SET_BIT_TO(live_state, X_MAX, stepperX.test_stall_status());
   #endif
 
   #if HAS_Y_MIN
@@ -571,9 +582,11 @@ void Endstops::update() {
       UPDATE_ENDSTOP_BIT(Y, MIN);
     #endif
   #elif Y_SPI_SENSORLESS && Y_HOME_DIR == -1
-    if (endstops.tmc_spi_homing.y) {
-      SET_BIT_TO(live_state, Y_MIN, stepperY.test_stall_status());
-    }
+    if (endstops.tmc_spi_homing.y
+      #if ENABLED(IMPROVE_HOMING_RELIABILITY)
+        && ELAPSED(ms, sg_guard_period)
+      #endif
+    ) SET_BIT_TO(live_state, Y_MIN, stepperY.test_stall_status());
   #endif
 
   #if HAS_Y_MAX
@@ -588,9 +601,11 @@ void Endstops::update() {
       UPDATE_ENDSTOP_BIT(Y, MAX);
     #endif
   #elif Y_SPI_SENSORLESS && Y_HOME_DIR == 1
-    if (endstops.tmc_spi_homing.y) {
-      SET_BIT_TO(live_state, Y_MAX, stepperY.test_stall_status());
-    }
+    if (endstops.tmc_spi_homing.y
+      #if ENABLED(IMPROVE_HOMING_RELIABILITY)
+        && ELAPSED(ms, sg_guard_period)
+      #endif
+    ) SET_BIT_TO(live_state, Y_MAX, stepperY.test_stall_status());
   #endif
 
   #if HAS_Z_MIN
@@ -614,9 +629,11 @@ void Endstops::update() {
       UPDATE_ENDSTOP_BIT(Z, MIN);
     #endif
   #elif Z_SPI_SENSORLESS && Z_HOME_DIR == -1
-    if (endstops.tmc_spi_homing.z) {
-      SET_BIT_TO(live_state, Z_MIN, stepperZ.test_stall_status());
-    }
+    if (endstops.tmc_spi_homing.z
+      #if ENABLED(IMPROVE_HOMING_RELIABILITY)
+        && ELAPSED(ms, sg_guard_period)
+      #endif
+    ) SET_BIT_TO(live_state, Z_MIN, stepperZ.test_stall_status());
   #endif
 
   // When closing the gap check the enabled probe
@@ -645,9 +662,11 @@ void Endstops::update() {
       UPDATE_ENDSTOP_BIT(Z, MAX);
     #endif
   #elif Z_SPI_SENSORLESS && Z_HOME_DIR == 1
-    if (endstops.tmc_spi_homing.z) {
-      SET_BIT_TO(live_state, Z_MAX, stepperZ.test_stall_status());
-    }
+    if (endstops.tmc_spi_homing.z
+      #if ENABLED(IMPROVE_HOMING_RELIABILITY)
+        && ELAPSED(ms, sg_guard_period)
+      #endif
+    ) SET_BIT_TO(live_state, Z_MAX, stepperZ.test_stall_status());
   #endif
 
   #if ENDSTOP_NOISE_THRESHOLD
