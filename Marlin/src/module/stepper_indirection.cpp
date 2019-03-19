@@ -197,7 +197,9 @@
     TMC_SPI_DEFINE(Z, Z);
   #endif
   #if AXIS_HAS_SPI(Z2)
-    TMC_SPI_DEFINE(Z2, Z);
+    //TMC_SPI_DEFINE(Z2, Z);
+    TMCMarlin<TMC2130Stepper, TMC_Z2_LABEL, Z_AXIS>
+    stepperZ2(Z2_CS_PIN, Z2_RSENSE, TMC_Z2_SW_MOSI, TMC_Z2_SW_MISO, TMC_Z2_SW_SCK);
   #endif
   #if AXIS_HAS_SPI(Z3)
     TMC_SPI_DEFINE(Z3, Z);
