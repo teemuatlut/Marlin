@@ -1120,6 +1120,22 @@ float get_homing_bump_feedrate(const AxisEnum axis) {
           break;
       #endif
     }
+
+    #if ENABLED(SPI_ENDSTOPS)
+      switch (axis) {
+        #if X_SPI_SENSORLESS
+          case X_AXIS: endstops.tmc_spi_homing.x = true; break;
+        #endif
+        #if Y_SPI_SENSORLESS
+          case Y_AXIS: endstops.tmc_spi_homing.y = true; break;
+        #endif
+        #if Z_SPI_SENSORLESS
+          case Z_AXIS: endstops.tmc_spi_homing.z = true; break;
+        #endif
+        default: break;
+      }
+    #endif
+
     return stealth_states;
   }
 
@@ -1169,6 +1185,21 @@ float get_homing_bump_feedrate(const AxisEnum axis) {
           break;
       #endif
     }
+
+    #if ENABLED(SPI_ENDSTOPS)
+      switch (axis) {
+        #if X_SPI_SENSORLESS
+          case X_AXIS: endstops.tmc_spi_homing.x = false; break;
+        #endif
+        #if Y_SPI_SENSORLESS
+          case Y_AXIS: endstops.tmc_spi_homing.y = false; break;
+        #endif
+        #if Z_SPI_SENSORLESS
+          case Z_AXIS: endstops.tmc_spi_homing.z = false; break;
+        #endif
+        default: break;
+      }
+    #endif
   }
 
 #endif // SENSORLESS_HOMING
@@ -1382,8 +1413,24 @@ void homeaxis(const AxisEnum axis) {
     // Only Z homing (with probe) is permitted
     if (axis != Z_AXIS) { BUZZ(100, 880); return; }
   #else
-    #define CAN_HOME(A) \
+    #define _CAN_HOME(A) \
       (axis == _AXIS(A) && ((A##_MIN_PIN > -1 && A##_HOME_DIR < 0) || (A##_MAX_PIN > -1 && A##_HOME_DIR > 0)))
+    #if X_SPI_SENSORLESS
+      #define CAN_HOME_X true
+    #else
+      #define CAN_HOME_X _CAN_HOME(X)
+    #endif
+    #if Y_SPI_SENSORLESS
+      #define CAN_HOME_Y true
+    #else
+      #define CAN_HOME_Y _CAN_HOME(Y)
+    #endif
+    #if Z_SPI_SENSORLESS
+      #define CAN_HOME_Z true
+    #else
+      #define CAN_HOME_Z _CAN_HOME(Z)
+    #endif
+    #define CAN_HOME(A) CAN_HOME_##A
     if (!CAN_HOME(X) && !CAN_HOME(Y) && !CAN_HOME(Z)) return;
   #endif
 
