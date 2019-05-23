@@ -1760,6 +1760,13 @@
   #endif
 
   /**
+   * Beta feature!
+   * With SQUARE_WAVE_STEPPING Marlin will create a 50/50 square wave step pulse
+   * that is optimal for stepper drivers.
+   */
+  #define SQUARE_WAVE_STEPPING
+
+  /**
    * Enable M122 debugging command for TMC stepper drivers.
    * M122 S0/1 will enable continous reporting.
    */
