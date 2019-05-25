@@ -176,6 +176,7 @@ class Endstops {
     #if ENABLED(SPI_ENDSTOPS)
       static struct tmc_spi_homing_t { bool x, y, z; } tmc_spi_homing;
       static void clear_endstop_state();
+      static void tmc_spi_homing_check();
     #endif
 };
 

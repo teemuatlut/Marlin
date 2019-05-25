@@ -44,6 +44,10 @@
   #include "../module/stepper.h"
 #endif
 
+#if ENABLED(SPI_ENDSTOPS)
+  #include "../module/endstops.h"
+#endif
+
 /**
  * Check for over temperature or short to ground error flags.
  * Report and log warning of overtemperature condition.
@@ -966,6 +970,61 @@
     return false;
   }
   void tmc_disable_stallguard(TMC2660Stepper, const bool) {};
+
+  #if ENABLED(SPI_ENDSTOPS)
+    void Endstops::tmc_spi_homing_check() {
+      #if X_SPI_SENSORLESS
+        #if X_HOME_DIR == -1
+          if (tmc_spi_homing.x) SET_BIT_TO(live_state, X_MIN, stepperX.test_stall_status());
+        #endif
+        #if X_HOME_DIR == 1
+          if (tmc_spi_homing.x) SET_BIT_TO(live_state, X_MAX, stepperX.test_stall_status());
+        #endif
+      #endif
+
+      #if Y_SPI_SENSORLESS
+        #if Y_HOME_DIR == -1
+          if (tmc_spi_homing.y) SET_BIT_TO(live_state, Y_MIN, stepperY.test_stall_status());
+        #endif
+        #if Y_HOME_DIR == 1
+          if (tmc_spi_homing.y) SET_BIT_TO(live_state, Y_MAX, stepperY.test_stall_status());
+        #endif
+      #endif
+
+      #if Z_SPI_SENSORLESS
+        #if Z_HOME_DIR == -1
+          if (tmc_spi_homing.z) SET_BIT_TO(live_state, Z_MIN, stepperZ.test_stall_status());
+        #endif
+        #if Z_HOME_DIR == 1
+          if (tmc_spi_homing.z) SET_BIT_TO(live_state, Z_MAX, stepperZ.test_stall_status());
+        #endif
+      #endif
+    }
+
+    void Endstops::clear_endstop_state() {
+      #if X_SPI_SENSORLESS
+        #if X_HOME_DIR == -1
+          SET_BIT_TO(live_state, X_MIN, false);
+        #elif X_HOME_DIR == 1
+          SET_BIT_TO(live_state, X_MAX, false);
+        #endif
+      #endif
+      #if Y_SPI_SENSORLESS
+        #if Y_HOME_DIR == -1
+          SET_BIT_TO(live_state, Y_MIN, false);
+        #elif Y_HOME_DIR == 1
+          SET_BIT_TO(live_state, Y_MAX, false);
+        #endif
+      #endif
+      #if Z_SPI_SENSORLESS // Needs hardware testing
+        #if Z_HOME_DIR == -1
+          SET_BIT_TO(live_state, Z_MIN, false);
+        #elif Z_HOME_DIR == 1
+          SET_BIT_TO(live_state, Z_MAX, false);
+        #endif
+      #endif
+    }
+  #endif
 
 #endif // USE_SENSORLESS
 

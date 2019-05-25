@@ -666,6 +666,14 @@ void idle(
     bool no_stepper_sleep/*=false*/
   #endif
 ) {
+
+  #if ENABLED(SPI_ENDSTOPS)
+    if ((endstops.tmc_spi_homing.x | endstops.tmc_spi_homing.y | endstops.tmc_spi_homing.z))
+      if (ELAPSED(millis(), sg_guard_period))
+        for (uint8_t i = 4; i>0; i--) // Read SGT 4 times per idle loop
+          endstops.tmc_spi_homing_check();
+  #endif
+
   #if ENABLED(MAX7219_DEBUG)
     max7219.idle_tasks();
   #endif
