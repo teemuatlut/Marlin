@@ -490,10 +490,6 @@ void Endstops::update() {
     if (!abort_enabled()) return;
   #endif
 
-  #if ENABLED(IMPROVE_HOMING_RELIABILITY) // With SENSORLESS_HOMING or SENSORLESS_PROBING
-    millis_t ms = millis();
-  #endif
-
   #define UPDATE_ENDSTOP_BIT(AXIS, MINMAX) SET_BIT_TO(live_state, _ENDSTOP(AXIS, MINMAX), (READ(_ENDSTOP_PIN(AXIS, MINMAX)) != _ENDSTOP_INVERTING(AXIS, MINMAX)))
   #define COPY_LIVE_STATE(SRC_BIT, DST_BIT) SET_BIT_TO(live_state, DST_BIT, TEST(live_state, SRC_BIT))
 
@@ -543,12 +539,6 @@ void Endstops::update() {
     #else
       UPDATE_ENDSTOP_BIT(X, MIN);
     #endif
-  #elif X_SPI_SENSORLESS && X_HOME_DIR == -1
-    if (endstops.tmc_spi_homing.x
-      #if ENABLED(IMPROVE_HOMING_RELIABILITY)
-        && ELAPSED(ms, sg_guard_period)
-      #endif
-    ) SET_BIT_TO(live_state, X_MIN, stepperX.test_stall_status());
   #endif
 
   #if HAS_X_MAX
@@ -562,12 +552,6 @@ void Endstops::update() {
     #else
       UPDATE_ENDSTOP_BIT(X, MAX);
     #endif
-  #elif X_SPI_SENSORLESS && X_HOME_DIR == 1
-    if (endstops.tmc_spi_homing.x
-      #if ENABLED(IMPROVE_HOMING_RELIABILITY)
-        && ELAPSED(ms, sg_guard_period)
-      #endif
-    ) SET_BIT_TO(live_state, X_MAX, stepperX.test_stall_status());
   #endif
 
   #if HAS_Y_MIN
@@ -581,12 +565,6 @@ void Endstops::update() {
     #else
       UPDATE_ENDSTOP_BIT(Y, MIN);
     #endif
-  #elif Y_SPI_SENSORLESS && Y_HOME_DIR == -1
-    if (endstops.tmc_spi_homing.y
-      #if ENABLED(IMPROVE_HOMING_RELIABILITY)
-        && ELAPSED(ms, sg_guard_period)
-      #endif
-    ) SET_BIT_TO(live_state, Y_MIN, stepperY.test_stall_status());
   #endif
 
   #if HAS_Y_MAX
@@ -600,12 +578,6 @@ void Endstops::update() {
     #else
       UPDATE_ENDSTOP_BIT(Y, MAX);
     #endif
-  #elif Y_SPI_SENSORLESS && Y_HOME_DIR == 1
-    if (endstops.tmc_spi_homing.y
-      #if ENABLED(IMPROVE_HOMING_RELIABILITY)
-        && ELAPSED(ms, sg_guard_period)
-      #endif
-    ) SET_BIT_TO(live_state, Y_MAX, stepperY.test_stall_status());
   #endif
 
   #if HAS_Z_MIN
@@ -628,12 +600,6 @@ void Endstops::update() {
     #elif Z_HOME_DIR < 0
       UPDATE_ENDSTOP_BIT(Z, MIN);
     #endif
-  #elif Z_SPI_SENSORLESS && Z_HOME_DIR == -1
-    if (endstops.tmc_spi_homing.z
-      #if ENABLED(IMPROVE_HOMING_RELIABILITY)
-        && ELAPSED(ms, sg_guard_period)
-      #endif
-    ) SET_BIT_TO(live_state, Z_MIN, stepperZ.test_stall_status());
   #endif
 
   // When closing the gap check the enabled probe
@@ -661,12 +627,6 @@ void Endstops::update() {
       // If this pin isn't the bed probe it's the Z endstop
       UPDATE_ENDSTOP_BIT(Z, MAX);
     #endif
-  #elif Z_SPI_SENSORLESS && Z_HOME_DIR == 1
-    if (endstops.tmc_spi_homing.z
-      #if ENABLED(IMPROVE_HOMING_RELIABILITY)
-        && ELAPSED(ms, sg_guard_period)
-      #endif
-    ) SET_BIT_TO(live_state, Z_MAX, stepperZ.test_stall_status());
   #endif
 
   #if ENDSTOP_NOISE_THRESHOLD
@@ -824,32 +784,6 @@ void Endstops::update() {
     }
   }
 } // Endstops::update()
-
-#if ENABLED(SPI_ENDSTOPS)
-  void Endstops::clear_endstop_state() {
-    #if X_SPI_SENSORLESS
-      #if X_HOME_DIR == -1
-        SET_BIT_TO(live_state, X_MIN, false);
-      #elif X_HOME_DIR == 1
-        SET_BIT_TO(live_state, X_MAX, false);
-      #endif
-    #endif
-    #if Y_SPI_SENSORLESS
-      #if Y_HOME_DIR == -1
-        SET_BIT_TO(live_state, Y_MIN, false);
-      #elif Y_HOME_DIR == 1
-        SET_BIT_TO(live_state, Y_MAX, false);
-      #endif
-    #endif
-    #if Z_SPI_SENSORLESS // Needs hardware testing
-      #if Z_HOME_DIR == -1
-        SET_BIT_TO(live_state, Z_MIN, false);
-      #elif Z_HOME_DIR == 1
-        SET_BIT_TO(live_state, Z_MAX, false);
-      #endif
-    #endif
-  }
-#endif
 
 #if ENABLED(PINS_DEBUGGING)
 
