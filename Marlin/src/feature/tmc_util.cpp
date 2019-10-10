@@ -982,11 +982,15 @@
   }
 
   bool tmc_enable_stallguard(TMC2209Stepper &st) {
+    bool stealthchop_was_enabled = !st.en_spreadCycle();
+
     st.TCOOLTHRS(0xFFFFF);
-    return true;
+    st.en_spreadCycle(false);
+    return stealthchop_was_enabled;
   }
-  void tmc_disable_stallguard(TMC2209Stepper &st, const bool restore_stealth _UNUSED) {
+  void tmc_disable_stallguard(TMC2209Stepper &st, const bool restore_stealth) {
     st.TCOOLTHRS(0);
+    st.en_spreadCycle(!restore_stealth);
   }
 
   bool tmc_enable_stallguard(TMC2660Stepper) {
