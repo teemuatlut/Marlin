@@ -3036,8 +3036,9 @@
  */
 #define NANODLP_Z_SYNC
 #if ENABLED(NANODLP_Z_SYNC)
-    #define NANODLP_ALL_AXIS  // Enables "Z_move_comp" output on any axis move.
-                              // Default behavior is limited to Z axis only.
+    // Enables "Z_move_comp" output on any axis move.
+    // Default behavior is limited to Z axis only.
+    #define NANODLP_ALL_AXIS
 #endif
 
 /**

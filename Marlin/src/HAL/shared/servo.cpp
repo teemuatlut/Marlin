@@ -50,8 +50,8 @@
  * detach()              - Stop an attached servo from pulsing its i/o pin.
  *
  */
-
 #include "../../inc/MarlinConfig.h"
+#include <WMath.h>
 
 #if SHARED_SERVOS
 

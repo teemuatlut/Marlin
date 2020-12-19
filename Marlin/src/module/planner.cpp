@@ -72,6 +72,8 @@
 
 #include "../MarlinCore.h"
 
+#include <WMath.h>
+
 #if HAS_LEVELING
   #include "../feature/bedlevel/bedlevel.h"
 #endif
